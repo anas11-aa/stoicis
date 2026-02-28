@@ -19,45 +19,43 @@
 
   /* ── SIDEBAR ── */
   .sidebar {
-    width: 220px;
+    width: 60px;
     background: #0d0d0d;
-    border-right: 1px solid #1e1e1e;
+    border-right: 1px solid #1a1a1a;
     display: flex;
     flex-direction: column;
-    padding: 24px 16px;
-    gap: 8px;
+    align-items: center;
+    padding: 20px 0;
+    gap: 6px;
     flex-shrink: 0;
-    transition: width 0.3s ease;
+    overflow: visible;
+    position: relative;
+    z-index: 100;
   }
 
   .sidebar-logo {
-    font-size: 1.3rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
+    font-size: 1rem;
+    font-weight: 700;
     color: #fff;
-    padding: 8px 12px 20px;
-    border-bottom: 1px solid #1e1e1e;
-    margin-bottom: 8px;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
   }
 
-  .sidebar-logo span { color: #888; font-weight: 300; }
-
+  /* Nav button — icon only, tooltip on hover */
   .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 14px;
+    position: relative;
+    width: 42px;
+    height: 42px;
     border-radius: 12px;
     border: none;
     background: transparent;
-    color: #888;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 400;
+    color: #555;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
     transition: all 0.2s;
-    text-align: left;
-    width: 100%;
   }
 
   .nav-btn:hover {
@@ -70,50 +68,89 @@
     color: #fff;
   }
 
-  .nav-btn .icon {
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
+  /* Tooltip label */
+  .nav-btn .tooltip {
+    position: absolute;
+    left: 54px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    font-family: 'Inter', sans-serif;
   }
+
+  .nav-btn:hover .tooltip { opacity: 1; }
 
   .sidebar-spacer { flex: 1; }
 
   .sidebar-bottom {
-    border-top: 1px solid #1e1e1e;
-    padding-top: 12px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 6px;
+    padding-top: 12px;
+    border-top: 1px solid #1a1a1a;
+    width: 100%;
   }
 
-  .api-status {
+  /* Status dot button */
+  .status-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    background: #1a1a1a;
-    font-size: 0.75rem;
-    color: #666;
-    cursor: pointer;
-    border: 1px solid #222;
-    transition: all 0.2s;
+    justify-content: center;
+    transition: background 0.2s;
   }
 
-  .api-status:hover { border-color: #444; color: #aaa; }
+  .status-btn:hover { background: #1a1a1a; }
 
   .status-dot {
-    width: 7px; height: 7px;
+    width: 10px; height: 10px;
     border-radius: 50%;
     background: #333;
-    flex-shrink: 0;
+    transition: background 0.3s;
   }
 
-  .status-dot.connected { background: #4ade80; box-shadow: 0 0 6px #4ade8066; }
+  .status-dot.connected {
+    background: #4ade80;
+    box-shadow: 0 0 8px #4ade8066;
+  }
+
+  .status-btn .tooltip {
+    position: absolute;
+    left: 54px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .status-btn:hover .tooltip { opacity: 1; }
 
   /* ── MAIN ── */
   .main {
@@ -124,24 +161,24 @@
     background: #000;
   }
 
-  /* ── PANELS ── */
   .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
   .panel.active { display: flex; }
 
-  /* ── CHAT PANEL ── */
-  #messages {
+  /* ── MESSAGES ── */
+  #messages, #codeMessages {
     flex: 1;
     overflow-y: auto;
-    padding: 32px 40px;
+    padding: 32px 44px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     scroll-behavior: smooth;
   }
 
-  #messages::-webkit-scrollbar { width: 4px; }
-  #messages::-webkit-scrollbar-track { background: transparent; }
-  #messages::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+  #messages::-webkit-scrollbar,
+  #codeMessages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar-thumb,
+  #codeMessages::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 4px; }
 
   .welcome-screen {
     flex: 1;
@@ -163,9 +200,9 @@
   }
 
   .welcome-screen p {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: #555;
-    max-width: 360px;
+    max-width: 380px;
     line-height: 1.7;
   }
 
@@ -191,11 +228,12 @@
 
   .quick-btn:hover { border-color: #444; color: #fff; background: #111; }
 
+  /* Messages */
   .msg {
     display: flex;
     gap: 14px;
     animation: fadeUp 0.25s ease;
-    max-width: 780px;
+    max-width: 800px;
   }
 
   @keyframes fadeUp {
@@ -211,7 +249,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 500;
     flex-shrink: 0;
     margin-top: 2px;
@@ -224,8 +262,8 @@
     padding: 13px 17px;
     border-radius: 16px;
     font-size: 0.88rem;
-    line-height: 1.7;
-    max-width: 580px;
+    line-height: 1.75;
+    max-width: 600px;
     white-space: pre-wrap;
     word-break: break-word;
   }
@@ -243,17 +281,7 @@
     border-radius: 16px 4px 16px 16px;
   }
 
-  .msg-image {
-    max-width: 360px;
-    border-radius: 12px;
-    border: 1px solid #1e1e1e;
-    display: block;
-    margin-top: 6px;
-  }
-
-  .code-wrap {
-    margin-top: 6px;
-  }
+  .code-wrap { margin-top: 4px; }
 
   .code-lang {
     font-size: 0.65rem;
@@ -269,7 +297,7 @@
     border-radius: 12px;
     padding: 16px;
     font-family: 'SF Mono', 'Fira Code', monospace;
-    font-size: 0.75rem;
+    font-size: 0.76rem;
     line-height: 1.7;
     color: #7dd3fc;
     overflow-x: auto;
@@ -280,7 +308,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #555;
+    color: #444;
     font-size: 0.8rem;
     padding: 4px 0;
   }
@@ -289,7 +317,7 @@
 
   .typing-dots span {
     width: 5px; height: 5px;
-    background: #444;
+    background: #333;
     border-radius: 50%;
     animation: blink 1.3s infinite;
   }
@@ -304,7 +332,7 @@
 
   /* ── INPUT BAR ── */
   .input-bar {
-    padding: 16px 40px 24px;
+    padding: 16px 44px 24px;
     background: #000;
     border-top: 1px solid #111;
   }
@@ -322,7 +350,7 @@
 
   .input-row:focus-within { border-color: #333; }
 
-  #chatInput {
+  .chat-textarea {
     flex: 1;
     background: transparent;
     border: none;
@@ -336,7 +364,7 @@
     max-height: 120px;
   }
 
-  #chatInput::placeholder { color: #444; }
+  .chat-textarea::placeholder { color: #333; }
 
   .send-btn {
     background: #fff;
@@ -353,21 +381,21 @@
     flex-shrink: 0;
   }
 
-  .send-btn:hover { background: #e0e0e0; transform: scale(1.05); }
-  .send-btn:disabled { background: #222; color: #555; cursor: not-allowed; transform: none; }
+  .send-btn:hover { background: #ddd; transform: scale(1.05); }
+  .send-btn:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; transform: none; }
 
   .input-hint {
     font-size: 0.7rem;
-    color: #333;
+    color: #2a2a2a;
     text-align: center;
     margin-top: 8px;
   }
 
-  /* ── API SETTINGS PANEL ── */
+  /* ── SETTINGS PANEL ── */
   #settingsPanel {
     flex: 1;
     overflow-y: auto;
-    padding: 40px;
+    padding: 40px 44px;
   }
 
   .settings-title {
@@ -396,32 +424,26 @@
     font-size: 0.95rem;
     font-weight: 500;
     margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
   }
 
   .settings-card p {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: #555;
     margin-bottom: 16px;
     line-height: 1.6;
   }
 
-  .settings-card a { color: #888; }
+  .settings-card a { color: #777; }
 
   .field-label {
-    font-size: 0.72rem;
-    color: #555;
+    font-size: 0.7rem;
+    color: #444;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     margin-bottom: 6px;
   }
 
-  .field-row {
-    display: flex;
-    gap: 8px;
-  }
+  .field-row { display: flex; gap: 8px; }
 
   .field-input {
     flex: 1;
@@ -453,7 +475,7 @@
     white-space: nowrap;
   }
 
-  .save-btn:hover { background: #e0e0e0; }
+  .save-btn:hover { background: #ddd; }
 
   .success-msg {
     font-size: 0.78rem;
@@ -462,73 +484,48 @@
     display: none;
   }
 
-  /* ── IMAGE PANEL ── */
-  #imagePanel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  .danger-btn {
+    background: transparent;
+    border: 1px solid #222;
+    color: #555;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    transition: all 0.2s;
   }
 
-  .image-gallery {
-    flex: 1;
-    overflow-y: auto;
-    padding: 32px 40px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-content: flex-start;
-  }
-
-  .gallery-img {
-    width: 220px;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 14px;
-    border: 1px solid #1e1e1e;
-    animation: fadeUp 0.3s ease;
-  }
-
-  .image-empty {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: #333;
-    padding: 80px 20px;
-    font-size: 0.85rem;
-  }
-
-  .image-empty .big-icon { font-size: 2.5rem; }
+  .danger-btn:hover { border-color: #ff4444; color: #ff4444; }
 </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-  <div class="sidebar-logo">Stoicis <span>AI</span></div>
+  <div class="sidebar-logo">S</div>
 
   <button class="nav-btn active" onclick="showPanel('chat')" id="nav-chat">
-    <span class="icon">💬</span> Chat
+    💬
+    <span class="tooltip">Chat</span>
   </button>
-  <button class="nav-btn" onclick="showPanel('image')" id="nav-image">
-    <span class="icon">🖼</span> Images
-  </button>
+
   <button class="nav-btn" onclick="showPanel('code')" id="nav-code">
-    <span class="icon">⌨️</span> Code
+    ⌨️
+    <span class="tooltip">Code</span>
   </button>
 
   <div class="sidebar-spacer"></div>
 
   <div class="sidebar-bottom">
-    <div class="api-status" onclick="showPanel('settings')" id="apiStatusBtn">
+    <button class="status-btn" onclick="showPanel('settings')" id="nav-settings">
       <div class="status-dot" id="statusDot"></div>
-      <span id="statusText">Add API Key</span>
-    </div>
-    <button class="nav-btn" onclick="showPanel('settings')" id="nav-settings">
-      <span class="icon">⚙️</span> Settings
+      <span class="tooltip" id="statusTooltip">Add API Key</span>
+    </button>
+
+    <button class="nav-btn" onclick="showPanel('settings')">
+      ⚙️
+      <span class="tooltip">Settings</span>
     </button>
   </div>
 </div>
@@ -541,56 +538,39 @@
     <div id="messages">
       <div class="welcome-screen" id="welcomeScreen">
         <h1>Hello. I'm Stoicis.</h1>
-        <p>Your AI assistant for conversation, image generation, and code. Add your API key in Settings to get started.</p>
+        <p>Your AI assistant for conversation and code. Add your free Groq API key in Settings to get started.</p>
         <div class="quick-btns">
           <button class="quick-btn" onclick="tryPrompt('Explain quantum computing simply')">Explain something</button>
-          <button class="quick-btn" onclick="tryPrompt('Write me a short poem about the night sky')">Write a poem</button>
+          <button class="quick-btn" onclick="tryPrompt('Write me a short poem about midnight')">Write a poem</button>
           <button class="quick-btn" onclick="tryPrompt('What are 5 habits of highly productive people?')">Give me tips</button>
         </div>
       </div>
     </div>
     <div class="input-bar">
       <div class="input-row">
-        <textarea id="chatInput" rows="1" placeholder="Message Stoicis..."></textarea>
+        <textarea class="chat-textarea" id="chatInput" rows="1" placeholder="Message Stoicis..."></textarea>
         <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
       </div>
       <div class="input-hint">Enter to send · Shift+Enter for new line</div>
     </div>
   </div>
 
-  <!-- IMAGE PANEL -->
-  <div class="panel" id="imagePanel">
-    <div class="image-gallery" id="imageGallery">
-      <div class="image-empty">
-        <div class="big-icon">🖼</div>
-        <div>Describe an image below to generate it</div>
-      </div>
-    </div>
-    <div class="input-bar">
-      <div class="input-row">
-        <textarea id="imageInput" rows="1" placeholder="Describe the image you want..."></textarea>
-        <button class="send-btn" id="imgSendBtn" onclick="sendImage()">↑</button>
-      </div>
-      <div class="input-hint">Powered by Groq + image generation</div>
-    </div>
-  </div>
-
   <!-- CODE PANEL -->
   <div class="panel" id="codePanel">
-    <div id="codeMessages" style="flex:1;overflow-y:auto;padding:32px 40px;display:flex;flex-direction:column;gap:20px;scroll-behavior:smooth;">
+    <div id="codeMessages">
       <div class="welcome-screen">
         <h1>Code Assistant</h1>
-        <p>Describe what you want to build and Stoicis will write clean, commented code for you.</p>
+        <p>Describe what you want to build and Stoicis will write clean, well-commented code for you.</p>
         <div class="quick-btns">
           <button class="quick-btn" onclick="tryCode('A Python web scraper for news headlines')">Python scraper</button>
-          <button class="quick-btn" onclick="tryCode('A JavaScript function to debounce input')">JS debounce</button>
+          <button class="quick-btn" onclick="tryCode('A JavaScript debounce function')">JS debounce</button>
           <button class="quick-btn" onclick="tryCode('A REST API in Node.js with Express')">Node.js API</button>
         </div>
       </div>
     </div>
     <div class="input-bar">
       <div class="input-row">
-        <textarea id="codeInput" rows="1" placeholder="Describe the code you need..."></textarea>
+        <textarea class="chat-textarea" id="codeInput" rows="1" placeholder="Describe the code you need..."></textarea>
         <button class="send-btn" id="codeSendBtn" onclick="sendCode()">↑</button>
       </div>
       <div class="input-hint">Enter to send · Shift+Enter for new line</div>
@@ -599,13 +579,13 @@
 
   <!-- SETTINGS PANEL -->
   <div class="panel" id="settingsPanel">
-    <div style="padding:40px;overflow-y:auto;flex:1;">
+    <div style="padding:40px 44px;overflow-y:auto;flex:1;">
       <div class="settings-title">Settings</div>
-      <div class="settings-sub">Connect your API key to power Stoicis. Your key is stored locally in your browser only.</div>
+      <div class="settings-sub">Connect your API key to power Stoicis. Your key is stored only in your browser — never sent anywhere else.</div>
 
       <div class="settings-card">
-        <h3>🔑 Groq API Key <span style="font-size:0.7rem;color:#4ade80;font-weight:400;" id="groqConnected"></span></h3>
-        <p>Groq is free with no credit card needed. Get your key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> → Sign up → API Keys → Create API Key.</p>
+        <h3>🔑 Groq API Key <span style="font-size:0.7rem;color:#4ade80;font-weight:400;margin-left:6px;" id="groqConnected"></span></h3>
+        <p>Groq is completely free — no credit card needed. Get your key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> → Sign up → API Keys → Create API Key.</p>
         <div class="field-label">API Key</div>
         <div class="field-row">
           <input class="field-input" type="password" id="groqKeyInput" placeholder="gsk_...">
@@ -614,21 +594,10 @@
         <div class="success-msg" id="groqSuccess">✓ Connected successfully</div>
       </div>
 
-      <div class="settings-card">
-        <h3>🖼 Image Generation</h3>
-        <p>Image generation uses a free placeholder for now. To enable real AI images, add a <a href="https://platform.stability.ai" target="_blank">Stability AI</a> key below (free credits on signup).</p>
-        <div class="field-label">Stability AI Key (optional)</div>
-        <div class="field-row">
-          <input class="field-input" type="password" id="stabilityKeyInput" placeholder="sk-...">
-          <button class="save-btn" onclick="saveStabilityKey()">Save</button>
-        </div>
-        <div class="success-msg" id="stabilitySuccess">✓ Connected successfully</div>
-      </div>
-
-      <div class="settings-card" style="border-color:#1a1a1a;">
+      <div class="settings-card" style="border-color:#161616;">
         <h3 style="color:#444;">🗑 Clear Data</h3>
-        <p>Remove all saved API keys and chat history from this browser.</p>
-        <button onclick="clearAll()" style="background:#111;border:1px solid #222;color:#666;padding:10px 20px;border-radius:10px;cursor:pointer;font-family:Inter,sans-serif;font-size:0.82rem;transition:all 0.2s;" onmouseover="this.style.borderColor='#444';this.style.color='#fff'" onmouseout="this.style.borderColor='#222';this.style.color='#666'">Clear everything</button>
+        <p style="color:#333;">Remove all saved API keys and reset Stoicis.</p>
+        <button class="danger-btn" onclick="clearAll()">Clear everything</button>
       </div>
     </div>
   </div>
@@ -637,27 +606,26 @@
 
 <script>
   let groqKey = localStorage.getItem('stoicis_groq') || '';
-  let stabilityKey = localStorage.getItem('stoicis_stability') || '';
   let chatHistory = [];
-  let activeMode = 'chat';
 
   function init() {
     updateStatus();
     if (groqKey) document.getElementById('groqKeyInput').value = groqKey;
-    if (stabilityKey) document.getElementById('stabilityKeyInput').value = stabilityKey;
     setupTextareas();
   }
 
   function updateStatus() {
     const dot = document.getElementById('statusDot');
-    const txt = document.getElementById('statusText');
+    const tip = document.getElementById('statusTooltip');
+    const badge = document.getElementById('groqConnected');
     if (groqKey) {
       dot.classList.add('connected');
-      txt.textContent = 'Connected';
-      document.getElementById('groqConnected').textContent = '● connected';
+      tip.textContent = 'Connected';
+      if (badge) badge.textContent = '● connected';
     } else {
       dot.classList.remove('connected');
-      txt.textContent = 'Add API Key';
+      tip.textContent = 'Add API Key';
+      if (badge) badge.textContent = '';
     }
   }
 
@@ -667,7 +635,6 @@
     document.getElementById(name + 'Panel').classList.add('active');
     const navEl = document.getElementById('nav-' + name);
     if (navEl) navEl.classList.add('active');
-    activeMode = name;
   }
 
   function saveGroqKey() {
@@ -679,38 +646,41 @@
       updateStatus();
       setTimeout(() => document.getElementById('groqSuccess').style.display = 'none', 3000);
     } else {
-      alert('Please enter a valid Groq API key.');
-    }
-  }
-
-  function saveStabilityKey() {
-    const val = document.getElementById('stabilityKeyInput').value.trim();
-    if (val.length > 10) {
-      stabilityKey = val;
-      localStorage.setItem('stoicis_stability', val);
-      document.getElementById('stabilitySuccess').style.display = 'block';
-      setTimeout(() => document.getElementById('stabilitySuccess').style.display = 'none', 3000);
+      alert('Please enter a valid Groq API key (starts with gsk_)');
     }
   }
 
   function clearAll() {
-    if (confirm('Clear all keys and history?')) {
+    if (confirm('Clear all saved keys and history?')) {
       localStorage.clear();
-      groqKey = ''; stabilityKey = ''; chatHistory = [];
+      groqKey = '';
+      chatHistory = [];
       document.getElementById('groqKeyInput').value = '';
-      document.getElementById('stabilityKeyInput').value = '';
       updateStatus();
     }
   }
 
-  // ── CHAT ──
-  function tryPrompt(text) {
-    if (!groqKey) { showPanel('settings'); return; }
-    document.getElementById('chatInput').value = text;
-    sendChat();
+  async function callGroq(messages, systemPrompt) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${groqKey}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'system', content: systemPrompt }, ...messages],
+        max_tokens: 2048,
+        temperature: 0.7
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.choices[0].message.content;
   }
 
-  function addMsg(container, role, content, type = 'text') {
+  function addMsg(containerId, role, content, type = 'text') {
+    const container = document.getElementById(containerId);
     const ws = container.querySelector('.welcome-screen');
     if (ws) ws.style.display = 'none';
 
@@ -736,11 +706,6 @@
       wrap.appendChild(label);
       wrap.appendChild(block);
       bubble.appendChild(wrap);
-    } else if (type === 'image') {
-      const img = document.createElement('img');
-      img.src = content;
-      img.className = 'msg-image';
-      bubble.appendChild(img);
     } else {
       bubble.textContent = content;
     }
@@ -751,38 +716,28 @@
     container.scrollTop = container.scrollHeight;
   }
 
-  function addTyping(container) {
+  function addTyping(containerId) {
+    const container = document.getElementById(containerId);
     const ws = container.querySelector('.welcome-screen');
     if (ws) ws.style.display = 'none';
     const d = document.createElement('div');
-    d.className = 'typing'; d.id = 'typing-' + container.id;
+    d.className = 'typing';
+    d.id = 'typing-' + containerId;
     d.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div><span>Stoicis is thinking...</span>`;
     container.appendChild(d);
     container.scrollTop = container.scrollHeight;
   }
 
-  function removeTyping(container) {
-    const t = document.getElementById('typing-' + container.id);
+  function removeTyping(containerId) {
+    const t = document.getElementById('typing-' + containerId);
     if (t) t.remove();
   }
 
-  async function callGroq(messages, systemPrompt) {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${groqKey}`
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'system', content: systemPrompt }, ...messages],
-        max_tokens: 2048,
-        temperature: 0.7
-      })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    return data.choices[0].message.content;
+  // ── CHAT ──
+  function tryPrompt(text) {
+    if (!groqKey) { showPanel('settings'); return; }
+    document.getElementById('chatInput').value = text;
+    sendChat();
   }
 
   async function sendChat() {
@@ -793,21 +748,19 @@
 
     input.value = '';
     input.style.height = 'auto';
-    const container = document.getElementById('messages');
-    addMsg(container, 'user', text);
+    addMsg('messages', 'user', text);
     document.getElementById('sendBtn').disabled = true;
-    addTyping(container);
-
+    addTyping('messages');
     chatHistory.push({ role: 'user', content: text });
 
     try {
       const reply = await callGroq(chatHistory, 'You are Stoicis, a helpful, thoughtful, and concise AI assistant.');
       chatHistory.push({ role: 'assistant', content: reply });
-      removeTyping(container);
-      addMsg(container, 'ai', reply);
+      removeTyping('messages');
+      addMsg('messages', 'ai', reply);
     } catch (e) {
-      removeTyping(container);
-      addMsg(container, 'ai', '⚠ Error: ' + e.message);
+      removeTyping('messages');
+      addMsg('messages', 'ai', '⚠ Error: ' + e.message);
     }
     document.getElementById('sendBtn').disabled = false;
   }
@@ -827,91 +780,34 @@
 
     input.value = '';
     input.style.height = 'auto';
-    const container = document.getElementById('codeMessages');
-    addMsg(container, 'user', text);
+    addMsg('codeMessages', 'user', text);
     document.getElementById('codeSendBtn').disabled = true;
-    addTyping(container);
+    addTyping('codeMessages');
 
     try {
       const reply = await callGroq(
         [{ role: 'user', content: text }],
         'You are Stoicis, an expert coding assistant. Write clean, well-commented code. Always wrap code in markdown code blocks with triple backticks.'
       );
-      removeTyping(container);
+      removeTyping('codeMessages');
       const codeMatch = reply.match(/```[\w]*\n([\s\S]*?)```/);
       if (codeMatch) {
         const explanation = reply.replace(/```[\s\S]*?```/g, '').trim();
-        if (explanation) addMsg(container, 'ai', explanation);
-        addMsg(container, 'ai', codeMatch[1].trim(), 'code');
+        if (explanation) addMsg('codeMessages', 'ai', explanation);
+        addMsg('codeMessages', 'ai', codeMatch[1].trim(), 'code');
       } else {
-        addMsg(container, 'ai', reply);
+        addMsg('codeMessages', 'ai', reply);
       }
     } catch (e) {
-      removeTyping(container);
-      addMsg(container, 'ai', '⚠ Error: ' + e.message);
+      removeTyping('codeMessages');
+      addMsg('codeMessages', 'ai', '⚠ Error: ' + e.message);
     }
     document.getElementById('codeSendBtn').disabled = false;
   }
 
-  // ── IMAGE ──
-  async function sendImage() {
-    const input = document.getElementById('imageInput');
-    const text = input.value.trim();
-    if (!text) return;
-    if (!groqKey) { showPanel('settings'); return; }
-
-    input.value = '';
-    input.style.height = 'auto';
-
-    const gallery = document.getElementById('imageGallery');
-    const empty = gallery.querySelector('.image-empty');
-    if (empty) empty.remove();
-
-    document.getElementById('imgSendBtn').disabled = true;
-
-    // placeholder loading card
-    const loading = document.createElement('div');
-    loading.style.cssText = 'width:220px;height:220px;border-radius:14px;background:#111;border:1px solid #1e1e1e;display:flex;align-items:center;justify-content:center;color:#333;font-size:0.8rem;';
-    loading.textContent = 'Generating...';
-    gallery.appendChild(loading);
-
-    try {
-      if (stabilityKey) {
-        // Stability AI
-        const res = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${stabilityKey}`, 'Accept': 'application/json' },
-          body: JSON.stringify({ text_prompts: [{ text, weight: 1 }], cfg_scale: 7, height: 1024, width: 1024, steps: 30, samples: 1 })
-        });
-        const data = await res.json();
-        if (data.artifacts) {
-          loading.remove();
-          const img = document.createElement('img');
-          img.src = `data:image/png;base64,${data.artifacts[0].base64}`;
-          img.className = 'gallery-img';
-          gallery.appendChild(img);
-        } else {
-          throw new Error(data.message || 'Image generation failed');
-        }
-      } else {
-        // Fallback: use Groq to describe, show placeholder
-        loading.remove();
-        const placeholder = document.createElement('div');
-        placeholder.style.cssText = 'width:220px;height:220px;border-radius:14px;background:#0d0d0d;border:1px solid #1e1e1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#444;font-size:0.75rem;text-align:center;padding:16px;';
-        placeholder.innerHTML = `<div style="font-size:2rem">🖼</div><div style="color:#333">"${text.slice(0,40)}..."</div><div style="font-size:0.65rem;color:#222;margin-top:4px;">Add Stability AI key in Settings for real images</div>`;
-        gallery.appendChild(placeholder);
-      }
-    } catch (e) {
-      loading.textContent = '⚠ ' + e.message;
-    }
-
-    document.getElementById('imgSendBtn').disabled = false;
-  }
-
-  // ── TEXTAREA AUTO-RESIZE ──
+  // ── TEXTAREA AUTO RESIZE ──
   function setupTextareas() {
-    ['chatInput', 'imageInput', 'codeInput'].forEach(id => {
-      const el = document.getElementById(id);
+    document.querySelectorAll('.chat-textarea').forEach(el => {
       el.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
@@ -920,9 +816,6 @@
 
     document.getElementById('chatInput').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-    });
-    document.getElementById('imageInput').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendImage(); }
     });
     document.getElementById('codeInput').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendCode(); }
