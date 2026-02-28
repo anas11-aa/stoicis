@@ -12,7 +12,6 @@
     --surface2: #18181d;
     --border: #2a2a32;
     --accent: #c8a96e;
-    --accent2: #7c6aff;
     --text: #e8e6e0;
     --text-dim: #6b6870;
     --text-mid: #9d9aa6;
@@ -32,7 +31,6 @@
     overflow: hidden;
   }
 
-  /* Noise texture overlay */
   body::before {
     content: '';
     position: fixed;
@@ -43,7 +41,6 @@
     opacity: 0.4;
   }
 
-  /* Header */
   header {
     display: flex;
     align-items: center;
@@ -59,17 +56,11 @@
     font-size: 1.6rem;
     font-weight: 300;
     letter-spacing: 0.15em;
-    color: var(--text);
   }
 
-  .logo span {
-    color: var(--accent);
-  }
+  .logo span { color: var(--accent); }
 
-  .header-pills {
-    display: flex;
-    gap: 8px;
-  }
+  .header-pills { display: flex; gap: 8px; }
 
   .pill {
     font-size: 0.6rem;
@@ -90,11 +81,6 @@
     background: rgba(200, 169, 110, 0.05);
   }
 
-  .pill.active {
-    background: rgba(200, 169, 110, 0.08);
-  }
-
-  /* Mode indicator */
   .mode-bar {
     padding: 8px 32px;
     border-bottom: 1px solid var(--border);
@@ -106,8 +92,7 @@
   }
 
   .mode-dot {
-    width: 6px;
-    height: 6px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: var(--accent);
     animation: pulse 2s infinite;
@@ -125,11 +110,8 @@
     color: var(--text-dim);
   }
 
-  .mode-label span {
-    color: var(--accent);
-  }
+  .mode-label span { color: var(--accent); }
 
-  /* Chat area */
   #chat {
     flex: 1;
     overflow-y: auto;
@@ -144,7 +126,6 @@
   #chat::-webkit-scrollbar-track { background: transparent; }
   #chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* Welcome state */
   .welcome {
     display: flex;
     flex-direction: column;
@@ -162,28 +143,26 @@
     font-size: 3.5rem;
     font-weight: 300;
     letter-spacing: 0.1em;
-    color: var(--text);
     line-height: 1;
   }
 
-  .welcome-title em {
-    font-style: italic;
-    color: var(--accent);
-  }
+  .welcome-title em { font-style: italic; color: var(--accent); }
 
   .welcome-sub {
     font-size: 0.65rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--text-dim);
-    max-width: 320px;
+    max-width: 340px;
     line-height: 1.8;
   }
 
   .welcome-caps {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     margin-top: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .cap {
@@ -205,9 +184,7 @@
     transform: translateY(-2px);
   }
 
-  .cap-icon {
-    font-size: 1.2rem;
-  }
+  .cap-icon { font-size: 1.2rem; }
 
   .cap-label {
     font-size: 0.55rem;
@@ -216,7 +193,6 @@
     color: var(--text-dim);
   }
 
-  /* Messages */
   .message {
     display: flex;
     gap: 16px;
@@ -229,20 +205,14 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .message.user {
-    align-self: flex-end;
-    flex-direction: row-reverse;
-  }
+  .message.user { align-self: flex-end; flex-direction: row-reverse; }
 
   .avatar {
-    width: 32px;
-    height: 32px;
+    width: 32px; height: 32px;
     border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.6rem;
-    letter-spacing: 0.05em;
     flex-shrink: 0;
     margin-top: 4px;
   }
@@ -252,13 +222,14 @@
     border: 1px solid var(--accent);
     color: var(--accent);
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
   }
 
   .avatar.user {
     background: var(--surface2);
     border: 1px solid var(--border);
     color: var(--text-dim);
+    font-size: 0.6rem;
   }
 
   .bubble {
@@ -267,32 +238,38 @@
     font-size: 0.8rem;
     line-height: 1.75;
     max-width: 600px;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 
   .message.ai .bubble {
     background: var(--ai-bubble);
     border: 1px solid var(--border);
-    color: var(--text);
     border-radius: 2px 8px 8px 8px;
   }
 
   .message.user .bubble {
     background: var(--user-bubble);
     border: 1px solid #2a2a40;
-    color: var(--text);
     border-radius: 8px 2px 8px 8px;
   }
 
-  /* Image result */
   .gen-image {
-    max-width: 400px;
+    max-width: 380px;
     border-radius: 4px;
     border: 1px solid var(--border);
     display: block;
     margin-top: 8px;
   }
 
-  /* Code block */
+  .code-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
   .code-block {
     background: #0d0d12;
     border: 1px solid var(--border);
@@ -307,33 +284,20 @@
     white-space: pre;
   }
 
-  .code-label {
-    font-size: 0.55rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-  }
-
-  /* Thinking indicator */
   .thinking {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: var(--text-dim);
     font-size: 0.65rem;
     letter-spacing: 0.1em;
-    padding: 8px 0;
+    padding: 4px 0;
   }
 
-  .thinking-dots {
-    display: flex;
-    gap: 3px;
-  }
+  .thinking-dots { display: flex; gap: 3px; }
 
   .thinking-dots span {
-    width: 4px;
-    height: 4px;
+    width: 4px; height: 4px;
     background: var(--accent);
     border-radius: 50%;
     animation: blink 1.2s infinite;
@@ -352,7 +316,6 @@
     to { opacity: 1; }
   }
 
-  /* Input area */
   .input-area {
     padding: 20px 32px 28px;
     border-top: 1px solid var(--border);
@@ -360,81 +323,12 @@
     flex-shrink: 0;
   }
 
-  .input-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px 16px;
-    transition: border-color 0.2s;
-  }
-
-  .input-wrapper:focus-within {
-    border-color: rgba(200, 169, 110, 0.4);
-  }
-
-  #userInput {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    line-height: 1.6;
-    resize: none;
-    max-height: 120px;
-    min-height: 24px;
-  }
-
-  #userInput::placeholder {
-    color: var(--text-dim);
-  }
-
-  .send-btn {
-    background: var(--accent);
-    border: none;
-    color: #0a0a0b;
-    width: 32px;
-    height: 32px;
-    border-radius: 3px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    font-size: 0.9rem;
-  }
-
-  .send-btn:hover {
-    background: #d4b87a;
-    transform: scale(1.05);
-  }
-
-  .send-btn:disabled {
-    background: var(--border);
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .input-hint {
-    font-size: 0.55rem;
-    letter-spacing: 0.1em;
-    color: var(--text-dim);
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  /* API key setup banner */
   .setup-banner {
     background: linear-gradient(135deg, rgba(200,169,110,0.08), rgba(124,106,255,0.08));
-    border: 1px solid rgba(200,169,110,0.2);
+    border: 1px solid rgba(200,169,110,0.25);
     border-radius: 6px;
     padding: 16px 20px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     font-size: 0.72rem;
     line-height: 1.7;
     color: var(--text-mid);
@@ -443,23 +337,16 @@
   .setup-banner strong {
     color: var(--accent);
     display: block;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     margin-bottom: 4px;
   }
 
-  .setup-banner a {
-    color: var(--accent);
-    text-decoration: none;
-  }
+  .setup-banner a { color: var(--accent); text-decoration: none; }
+  .setup-banner a:hover { text-decoration: underline; }
 
-  /* API key input */
-  .api-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
+  .api-row { display: flex; gap: 8px; margin-top: 10px; }
 
   .api-input {
     flex: 1;
@@ -479,16 +366,71 @@
     background: var(--accent);
     border: none;
     color: #0a0a0b;
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 4px;
     cursor: pointer;
     font-family: 'DM Mono', monospace;
     font-size: 0.65rem;
     letter-spacing: 0.08em;
-    font-weight: 400;
+    transition: background 0.2s;
   }
 
   .api-btn:hover { background: #d4b87a; }
+
+  .input-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    transition: border-color 0.2s;
+  }
+
+  .input-wrapper:focus-within { border-color: rgba(200, 169, 110, 0.4); }
+
+  #userInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    resize: none;
+    max-height: 120px;
+    min-height: 24px;
+  }
+
+  #userInput::placeholder { color: var(--text-dim); }
+
+  .send-btn {
+    background: var(--accent);
+    border: none;
+    color: #0a0a0b;
+    width: 32px; height: 32px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    font-size: 1rem;
+  }
+
+  .send-btn:hover { background: #d4b87a; transform: scale(1.05); }
+  .send-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
+
+  .input-hint {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-align: center;
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
@@ -510,17 +452,17 @@
 <div id="chat">
   <div class="welcome" id="welcome">
     <div class="welcome-title">Think with <em>Stoicis</em></div>
-    <div class="welcome-sub">An AI assistant that reasons, creates, and codes. Built for clarity.</div>
+    <div class="welcome-sub">Chat · Generate Images · Write Code — powered by Google Gemini, free.</div>
     <div class="welcome-caps">
-      <div class="cap" onclick="quickPrompt('Explain something complex to me simply')">
+      <div class="cap" onclick="quickPrompt('Explain the Stoic philosophy in simple terms')">
         <div class="cap-icon">◈</div>
         <div class="cap-label">Explain</div>
       </div>
-      <div class="cap" onclick="setMode('image'); quickPrompt('A serene mountain landscape at golden hour')">
+      <div class="cap" onclick="setMode('image'); quickPrompt('A futuristic city at sunset, cinematic')">
         <div class="cap-icon">◉</div>
         <div class="cap-label">Create Image</div>
       </div>
-      <div class="cap" onclick="setMode('code'); quickPrompt('Write a Python function to sort a list')">
+      <div class="cap" onclick="setMode('code'); quickPrompt('Write a Python web scraper')">
         <div class="cap-icon">◫</div>
         <div class="cap-label">Write Code</div>
       </div>
@@ -530,10 +472,10 @@
 
 <div class="input-area">
   <div class="setup-banner" id="setupBanner">
-    <strong>⚡ Connect your OpenAI API key to activate Stoicis</strong>
-    Get a free key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a> — paste it below to start.
+    <strong>⚡ Connect your free Google Gemini API key</strong>
+    Get it free at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a> — no credit card needed. Sign in with Google → Get API Key → Create API Key → paste below.
     <div class="api-row">
-      <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-...">
+      <input class="api-input" type="password" id="apiKeyInput" placeholder="AIzaSy...">
       <button class="api-btn" onclick="saveApiKey()">Connect</button>
     </div>
   </div>
@@ -546,8 +488,9 @@
 
 <script>
   let mode = 'chat';
-  let apiKey = localStorage.getItem('stoicis_key') || '';
+  let apiKey = localStorage.getItem('stoicis_gemini_key') || '';
   let isThinking = false;
+  let conversationHistory = [];
 
   const modeLabels = { chat: 'Conversation', image: 'Image Generation', code: 'Code Assistant' };
   const modePlaceholders = {
@@ -557,22 +500,20 @@
   };
 
   function init() {
-    if (apiKey) {
-      document.getElementById('setupBanner').style.display = 'none';
-    }
-    autoResize();
+    if (apiKey) document.getElementById('setupBanner').style.display = 'none';
+    setupInput();
   }
 
   function saveApiKey() {
     const val = document.getElementById('apiKeyInput').value.trim();
-    if (val.startsWith('sk-')) {
+    if (val.length > 15) {
       apiKey = val;
-      localStorage.setItem('stoicis_key', val);
+      localStorage.setItem('stoicis_gemini_key', val);
       document.getElementById('setupBanner').style.display = 'none';
-      addMessage('ai', 'API key connected. Stoicis is ready. What would you like to explore?');
+      addMessage('ai', 'Connected! Stoicis is ready. What would you like to explore?');
       hideWelcome();
     } else {
-      alert('Please enter a valid OpenAI API key starting with sk-');
+      alert('Please enter a valid Gemini API key (starts with AIza...)');
     }
   }
 
@@ -590,8 +531,8 @@
   }
 
   function quickPrompt(text) {
+    if (!apiKey) { alert('Please connect your Gemini API key first.'); return; }
     document.getElementById('userInput').value = text;
-    hideWelcome();
     sendMessage();
   }
 
@@ -608,7 +549,7 @@
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
 
-    if (type === 'image' && content.startsWith('http')) {
+    if (type === 'image') {
       const img = document.createElement('img');
       img.src = content;
       img.className = 'gen-image';
@@ -618,11 +559,11 @@
       const label = document.createElement('div');
       label.className = 'code-label';
       label.textContent = '— Generated Code —';
-      const code = document.createElement('div');
-      code.className = 'code-block';
-      code.textContent = content;
+      const block = document.createElement('div');
+      block.className = 'code-block';
+      block.textContent = content;
       bubble.appendChild(label);
-      bubble.appendChild(code);
+      bubble.appendChild(block);
     } else {
       bubble.textContent = content;
     }
@@ -631,7 +572,6 @@
     div.appendChild(bubble);
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
-    return div;
   }
 
   function addThinking() {
@@ -640,7 +580,7 @@
     const div = document.createElement('div');
     div.className = 'thinking';
     div.id = 'thinking';
-    div.innerHTML = `<div class="thinking-dots"><span></span><span></span><span></span></div><span>Stoicis is thinking</span>`;
+    div.innerHTML = `<div class="thinking-dots"><span></span><span></span><span></span></div><span>Stoicis is thinking...</span>`;
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
   }
@@ -655,11 +595,7 @@
     const input = document.getElementById('userInput');
     const text = input.value.trim();
     if (!text) return;
-
-    if (!apiKey) {
-      alert('Please connect your OpenAI API key first.');
-      return;
-    }
+    if (!apiKey) { alert('Please connect your Gemini API key first.'); return; }
 
     input.value = '';
     input.style.height = 'auto';
@@ -676,7 +612,7 @@
       }
     } catch (e) {
       removeThinking();
-      addMessage('ai', 'Something went wrong: ' + e.message);
+      addMessage('ai', '⚠ Error: ' + e.message);
     }
 
     isThinking = false;
@@ -684,35 +620,33 @@
   }
 
   async function generateText(prompt, isCode) {
-    const systemPrompt = isCode
-      ? 'You are Stoicis, an expert coding assistant. Provide clean, well-commented code. Always respond with the code and a brief explanation.'
-      : 'You are Stoicis, a thoughtful and precise AI assistant. Be concise, insightful, and clear.';
+    const systemText = isCode
+      ? 'You are Stoicis, an expert coding assistant. Provide clean, well-commented code with a brief explanation. Always wrap code in markdown code blocks using triple backticks.'
+      : 'You are Stoicis, a thoughtful and precise AI assistant. Be concise and clear.';
 
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: prompt }
-        ],
-        max_tokens: 1000
-      })
-    });
+    conversationHistory.push({ role: 'user', parts: [{ text: prompt }] });
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemText }] },
+          contents: conversationHistory,
+          generationConfig: { maxOutputTokens: 2048, temperature: 0.7 }
+        })
+      }
+    );
 
     const data = await res.json();
     removeThinking();
-
     if (data.error) throw new Error(data.error.message);
 
-    const reply = data.choices[0].message.content;
+    const reply = data.candidates[0].content.parts[0].text;
+    conversationHistory.push({ role: 'model', parts: [{ text: reply }] });
 
     if (isCode) {
-      // Extract code blocks if present
       const codeMatch = reply.match(/```[\w]*\n([\s\S]*?)```/);
       if (codeMatch) {
         const explanation = reply.replace(/```[\s\S]*?```/g, '').trim();
@@ -727,30 +661,33 @@
   }
 
   async function generateImage(prompt) {
-    const res = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: 'dall-e-3',
-        prompt: prompt,
-        n: 1,
-        size: '1024x1024'
-      })
-    });
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
+        })
+      }
+    );
 
     const data = await res.json();
     removeThinking();
-
     if (data.error) throw new Error(data.error.message);
 
-    const imageUrl = data.data[0].url;
-    addMessage('ai', imageUrl, 'image');
+    const parts = data.candidates[0].content.parts;
+    for (const part of parts) {
+      if (part.inlineData) {
+        addMessage('ai', `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`, 'image');
+      } else if (part.text) {
+        addMessage('ai', part.text);
+      }
+    }
   }
 
-  function autoResize() {
+  function setupInput() {
     const input = document.getElementById('userInput');
     input.addEventListener('input', function() {
       this.style.height = 'auto';
