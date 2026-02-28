@@ -4,700 +4,928 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stoicis — AI Assistant</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0b;
-    --surface: #111114;
-    --surface2: #18181d;
-    --border: #2a2a32;
-    --accent: #c8a96e;
-    --text: #e8e6e0;
-    --text-dim: #6b6870;
-    --text-mid: #9d9aa6;
-    --user-bubble: #1a1a24;
-    --ai-bubble: #13131a;
-  }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
+    background: #000;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
     height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px;
+    background: #0d0d0d;
+    border-right: 1px solid #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    gap: 8px;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+  }
+
+  .sidebar-logo {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #fff;
+    padding: 8px 12px 20px;
+    border-bottom: 1px solid #1e1e1e;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-logo span { color: #888; font-weight: 300; }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    color: #888;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+  }
+
+  .nav-btn:hover {
+    background: #1a1a1a;
+    color: #fff;
+  }
+
+  .nav-btn.active {
+    background: #1e1e1e;
+    color: #fff;
+  }
+
+  .nav-btn .icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .sidebar-spacer { flex: 1; }
+
+  .sidebar-bottom {
+    border-top: 1px solid #1e1e1e;
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #1a1a1a;
+    font-size: 0.75rem;
+    color: #666;
+    cursor: pointer;
+    border: 1px solid #222;
+    transition: all 0.2s;
+  }
+
+  .api-status:hover { border-color: #444; color: #aaa; }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #333;
+    flex-shrink: 0;
+  }
+
+  .status-dot.connected { background: #4ade80; box-shadow: 0 0 6px #4ade8066; }
+
+  /* ── MAIN ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #000;
+  }
+
+  /* ── PANELS ── */
+  .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .panel.active { display: flex; }
+
+  /* ── CHAT PANEL ── */
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+
+  #messages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar-track { background: transparent; }
+  #messages::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+
+  .welcome-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 40px;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .welcome-screen h1 {
+    font-size: 2.2rem;
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+
+  .welcome-screen p {
+    font-size: 0.9rem;
+    color: #555;
+    max-width: 360px;
+    line-height: 1.7;
+  }
+
+  .quick-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .quick-btn {
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: 1px solid #222;
+    background: transparent;
+    color: #888;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .quick-btn:hover { border-color: #444; color: #fff; background: #111; }
+
+  .msg {
+    display: flex;
+    gap: 14px;
+    animation: fadeUp 0.25s ease;
+    max-width: 780px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 30px; height: 30px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .msg.ai .msg-avatar { background: #1a1a1a; border: 1px solid #2a2a2a; color: #aaa; }
+  .msg.user .msg-avatar { background: #fff; color: #000; }
+
+  .msg-bubble {
+    padding: 13px 17px;
+    border-radius: 16px;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    max-width: 580px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .msg.ai .msg-bubble {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    color: #e8e8e8;
+    border-radius: 4px 16px 16px 16px;
+  }
+
+  .msg.user .msg-bubble {
+    background: #fff;
+    color: #000;
+    border-radius: 16px 4px 16px 16px;
+  }
+
+  .msg-image {
+    max-width: 360px;
+    border-radius: 12px;
+    border: 1px solid #1e1e1e;
+    display: block;
+    margin-top: 6px;
+  }
+
+  .code-wrap {
+    margin-top: 6px;
+  }
+
+  .code-lang {
+    font-size: 0.65rem;
+    color: #555;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .code-block {
+    background: #0a0a0a;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: #7dd3fc;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .typing {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+    font-size: 0.8rem;
+    padding: 4px 0;
+  }
+
+  .typing-dots { display: flex; gap: 4px; }
+
+  .typing-dots span {
+    width: 5px; height: 5px;
+    background: #444;
+    border-radius: 50%;
+    animation: blink 1.3s infinite;
+  }
+
+  .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── INPUT BAR ── */
+  .input-bar {
+    padding: 16px 40px 24px;
+    background: #000;
+    border-top: 1px solid #111;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: #0d0d0d;
+    border: 1px solid #1e1e1e;
+    border-radius: 16px;
+    padding: 12px 16px;
+    transition: border-color 0.2s;
+  }
+
+  .input-row:focus-within { border-color: #333; }
+
+  #chatInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    resize: none;
+    min-height: 22px;
+    max-height: 120px;
+  }
+
+  #chatInput::placeholder { color: #444; }
+
+  .send-btn {
+    background: #fff;
+    border: none;
+    color: #000;
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .send-btn:hover { background: #e0e0e0; transform: scale(1.05); }
+  .send-btn:disabled { background: #222; color: #555; cursor: not-allowed; transform: none; }
+
+  .input-hint {
+    font-size: 0.7rem;
+    color: #333;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* ── API SETTINGS PANEL ── */
+  #settingsPanel {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px;
+  }
+
+  .settings-title {
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .settings-sub {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .settings-card {
+    background: #0d0d0d;
+    border: 1px solid #1e1e1e;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    max-width: 560px;
+  }
+
+  .settings-card h3 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .settings-card p {
+    font-size: 0.8rem;
+    color: #555;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  .settings-card a { color: #888; }
+
+  .field-label {
+    font-size: 0.72rem;
+    color: #555;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .field-input {
+    flex: 1;
+    background: #000;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field-input:focus { border-color: #444; }
+  .field-input::placeholder { color: #333; }
+
+  .save-btn {
+    background: #fff;
+    border: none;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .save-btn:hover { background: #e0e0e0; }
+
+  .success-msg {
+    font-size: 0.78rem;
+    color: #4ade80;
+    margin-top: 8px;
+    display: none;
+  }
+
+  /* ── IMAGE PANEL ── */
+  #imagePanel {
+    flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
-  }
-
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 32px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    flex-shrink: 0;
-  }
-
-  .logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.6rem;
-    font-weight: 300;
-    letter-spacing: 0.15em;
-  }
-
-  .logo span { color: var(--accent); }
-
-  .header-pills { display: flex; gap: 8px; }
-
-  .pill {
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 5px 12px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--text-dim);
-    background: transparent;
-  }
-
-  .pill:hover, .pill.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(200, 169, 110, 0.05);
-  }
-
-  .mode-bar {
-    padding: 8px 32px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
-  .mode-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .mode-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-
-  .mode-label span { color: var(--accent); }
-
-  #chat {
+  .image-gallery {
     flex: 1;
     overflow-y: auto;
-    padding: 32px;
+    padding: 32px 40px;
     display: flex;
-    flex-direction: column;
-    gap: 24px;
-    scroll-behavior: smooth;
-  }
-
-  #chat::-webkit-scrollbar { width: 4px; }
-  #chat::-webkit-scrollbar-track { background: transparent; }
-  #chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .welcome {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    gap: 16px;
-    padding: 60px 20px;
-    text-align: center;
-    animation: fadeIn 0.8s ease;
-  }
-
-  .welcome-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 3.5rem;
-    font-weight: 300;
-    letter-spacing: 0.1em;
-    line-height: 1;
-  }
-
-  .welcome-title em { font-style: italic; color: var(--accent); }
-
-  .welcome-sub {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    max-width: 340px;
-    line-height: 1.8;
-  }
-
-  .welcome-caps {
-    display: flex;
-    gap: 16px;
-    margin-top: 16px;
     flex-wrap: wrap;
-    justify-content: center;
+    gap: 16px;
+    align-content: flex-start;
   }
 
-  .cap {
+  .gallery-img {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid #1e1e1e;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .image-empty {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    padding: 16px 20px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.25s;
-    min-width: 100px;
-  }
-
-  .cap:hover {
-    border-color: var(--accent);
-    background: rgba(200, 169, 110, 0.04);
-    transform: translateY(-2px);
-  }
-
-  .cap-icon { font-size: 1.2rem; }
-
-  .cap-label {
-    font-size: 0.55rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-
-  .message {
-    display: flex;
-    gap: 16px;
-    animation: slideUp 0.3s ease;
-    max-width: 800px;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .message.user { align-self: flex-end; flex-direction: row-reverse; }
-
-  .avatar {
-    width: 32px; height: 32px;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    margin-top: 4px;
+    gap: 10px;
+    color: #333;
+    padding: 80px 20px;
+    font-size: 0.85rem;
   }
 
-  .avatar.ai {
-    background: linear-gradient(135deg, #c8a96e22, #7c6aff22);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.9rem;
-  }
-
-  .avatar.user {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-size: 0.6rem;
-  }
-
-  .bubble {
-    padding: 14px 18px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    line-height: 1.75;
-    max-width: 600px;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .message.ai .bubble {
-    background: var(--ai-bubble);
-    border: 1px solid var(--border);
-    border-radius: 2px 8px 8px 8px;
-  }
-
-  .message.user .bubble {
-    background: var(--user-bubble);
-    border: 1px solid #2a2a40;
-    border-radius: 8px 2px 8px 8px;
-  }
-
-  .gen-image {
-    max-width: 380px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    display: block;
-    margin-top: 8px;
-  }
-
-  .code-label {
-    font-size: 0.55rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-  }
-
-  .code-block {
-    background: #0d0d12;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 16px;
-    margin-top: 8px;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    line-height: 1.7;
-    color: #a8c8ff;
-    overflow-x: auto;
-    white-space: pre;
-  }
-
-  .thinking {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-dim);
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    padding: 4px 0;
-  }
-
-  .thinking-dots { display: flex; gap: 3px; }
-
-  .thinking-dots span {
-    width: 4px; height: 4px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: blink 1.2s infinite;
-  }
-
-  .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes blink {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 1; }
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .input-area {
-    padding: 20px 32px 28px;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-    flex-shrink: 0;
-  }
-
-  .setup-banner {
-    background: linear-gradient(135deg, rgba(200,169,110,0.08), rgba(124,106,255,0.08));
-    border: 1px solid rgba(200,169,110,0.25);
-    border-radius: 6px;
-    padding: 16px 20px;
-    margin-bottom: 16px;
-    font-size: 0.72rem;
-    line-height: 1.7;
-    color: var(--text-mid);
-  }
-
-  .setup-banner strong {
-    color: var(--accent);
-    display: block;
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .setup-banner a { color: var(--accent); text-decoration: none; }
-  .setup-banner a:hover { text-decoration: underline; }
-
-  .api-row { display: flex; gap: 8px; margin-top: 10px; }
-
-  .api-input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 12px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    outline: none;
-  }
-
-  .api-input:focus { border-color: var(--accent); }
-
-  .api-btn {
-    background: var(--accent);
-    border: none;
-    color: #0a0a0b;
-    padding: 8px 18px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    transition: background 0.2s;
-  }
-
-  .api-btn:hover { background: #d4b87a; }
-
-  .input-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px 16px;
-    transition: border-color 0.2s;
-  }
-
-  .input-wrapper:focus-within { border-color: rgba(200, 169, 110, 0.4); }
-
-  #userInput {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    line-height: 1.6;
-    resize: none;
-    max-height: 120px;
-    min-height: 24px;
-  }
-
-  #userInput::placeholder { color: var(--text-dim); }
-
-  .send-btn {
-    background: var(--accent);
-    border: none;
-    color: #0a0a0b;
-    width: 32px; height: 32px;
-    border-radius: 3px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    font-size: 1rem;
-  }
-
-  .send-btn:hover { background: #d4b87a; transform: scale(1.05); }
-  .send-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
-
-  .input-hint {
-    font-size: 0.55rem;
-    letter-spacing: 0.1em;
-    color: var(--text-dim);
-    text-align: center;
-    margin-top: 10px;
-  }
+  .image-empty .big-icon { font-size: 2.5rem; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Stoici<span>s</span></div>
-  <div class="header-pills">
-    <button class="pill active" onclick="setMode('chat')" id="pill-chat">Chat</button>
-    <button class="pill" onclick="setMode('image')" id="pill-image">Image</button>
-    <button class="pill" onclick="setMode('code')" id="pill-code">Code</button>
-  </div>
-</header>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">Stoicis <span>AI</span></div>
 
-<div class="mode-bar">
-  <div class="mode-dot"></div>
-  <div class="mode-label">Mode: <span id="modeLabel">Conversation</span></div>
-</div>
+  <button class="nav-btn active" onclick="showPanel('chat')" id="nav-chat">
+    <span class="icon">💬</span> Chat
+  </button>
+  <button class="nav-btn" onclick="showPanel('image')" id="nav-image">
+    <span class="icon">🖼</span> Images
+  </button>
+  <button class="nav-btn" onclick="showPanel('code')" id="nav-code">
+    <span class="icon">⌨️</span> Code
+  </button>
 
-<div id="chat">
-  <div class="welcome" id="welcome">
-    <div class="welcome-title">Think with <em>Stoicis</em></div>
-    <div class="welcome-sub">Chat · Generate Images · Write Code — powered by Google Gemini, free.</div>
-    <div class="welcome-caps">
-      <div class="cap" onclick="quickPrompt('Explain the Stoic philosophy in simple terms')">
-        <div class="cap-icon">◈</div>
-        <div class="cap-label">Explain</div>
-      </div>
-      <div class="cap" onclick="setMode('image'); quickPrompt('A futuristic city at sunset, cinematic')">
-        <div class="cap-icon">◉</div>
-        <div class="cap-label">Create Image</div>
-      </div>
-      <div class="cap" onclick="setMode('code'); quickPrompt('Write a Python web scraper')">
-        <div class="cap-icon">◫</div>
-        <div class="cap-label">Write Code</div>
-      </div>
+  <div class="sidebar-spacer"></div>
+
+  <div class="sidebar-bottom">
+    <div class="api-status" onclick="showPanel('settings')" id="apiStatusBtn">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Add API Key</span>
     </div>
+    <button class="nav-btn" onclick="showPanel('settings')" id="nav-settings">
+      <span class="icon">⚙️</span> Settings
+    </button>
   </div>
 </div>
 
-<div class="input-area">
-  <div class="setup-banner" id="setupBanner">
-    <strong>⚡ Connect your free Google Gemini API key</strong>
-    Get it free at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a> — no credit card needed. Sign in with Google → Get API Key → Create API Key → paste below.
-    <div class="api-row">
-      <input class="api-input" type="password" id="apiKeyInput" placeholder="AIzaSy...">
-      <button class="api-btn" onclick="saveApiKey()">Connect</button>
+<!-- MAIN -->
+<div class="main">
+
+  <!-- CHAT PANEL -->
+  <div class="panel active" id="chatPanel">
+    <div id="messages">
+      <div class="welcome-screen" id="welcomeScreen">
+        <h1>Hello. I'm Stoicis.</h1>
+        <p>Your AI assistant for conversation, image generation, and code. Add your API key in Settings to get started.</p>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="tryPrompt('Explain quantum computing simply')">Explain something</button>
+          <button class="quick-btn" onclick="tryPrompt('Write me a short poem about the night sky')">Write a poem</button>
+          <button class="quick-btn" onclick="tryPrompt('What are 5 habits of highly productive people?')">Give me tips</button>
+        </div>
+      </div>
+    </div>
+    <div class="input-bar">
+      <div class="input-row">
+        <textarea id="chatInput" rows="1" placeholder="Message Stoicis..."></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line</div>
     </div>
   </div>
-  <div class="input-wrapper">
-    <textarea id="userInput" rows="1" placeholder="Ask anything..."></textarea>
-    <button class="send-btn" id="sendBtn" onclick="sendMessage()">↑</button>
+
+  <!-- IMAGE PANEL -->
+  <div class="panel" id="imagePanel">
+    <div class="image-gallery" id="imageGallery">
+      <div class="image-empty">
+        <div class="big-icon">🖼</div>
+        <div>Describe an image below to generate it</div>
+      </div>
+    </div>
+    <div class="input-bar">
+      <div class="input-row">
+        <textarea id="imageInput" rows="1" placeholder="Describe the image you want..."></textarea>
+        <button class="send-btn" id="imgSendBtn" onclick="sendImage()">↑</button>
+      </div>
+      <div class="input-hint">Powered by Groq + image generation</div>
+    </div>
   </div>
-  <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+
+  <!-- CODE PANEL -->
+  <div class="panel" id="codePanel">
+    <div id="codeMessages" style="flex:1;overflow-y:auto;padding:32px 40px;display:flex;flex-direction:column;gap:20px;scroll-behavior:smooth;">
+      <div class="welcome-screen">
+        <h1>Code Assistant</h1>
+        <p>Describe what you want to build and Stoicis will write clean, commented code for you.</p>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="tryCode('A Python web scraper for news headlines')">Python scraper</button>
+          <button class="quick-btn" onclick="tryCode('A JavaScript function to debounce input')">JS debounce</button>
+          <button class="quick-btn" onclick="tryCode('A REST API in Node.js with Express')">Node.js API</button>
+        </div>
+      </div>
+    </div>
+    <div class="input-bar">
+      <div class="input-row">
+        <textarea id="codeInput" rows="1" placeholder="Describe the code you need..."></textarea>
+        <button class="send-btn" id="codeSendBtn" onclick="sendCode()">↑</button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div class="panel" id="settingsPanel">
+    <div style="padding:40px;overflow-y:auto;flex:1;">
+      <div class="settings-title">Settings</div>
+      <div class="settings-sub">Connect your API key to power Stoicis. Your key is stored locally in your browser only.</div>
+
+      <div class="settings-card">
+        <h3>🔑 Groq API Key <span style="font-size:0.7rem;color:#4ade80;font-weight:400;" id="groqConnected"></span></h3>
+        <p>Groq is free with no credit card needed. Get your key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> → Sign up → API Keys → Create API Key.</p>
+        <div class="field-label">API Key</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="groqKeyInput" placeholder="gsk_...">
+          <button class="save-btn" onclick="saveGroqKey()">Save</button>
+        </div>
+        <div class="success-msg" id="groqSuccess">✓ Connected successfully</div>
+      </div>
+
+      <div class="settings-card">
+        <h3>🖼 Image Generation</h3>
+        <p>Image generation uses a free placeholder for now. To enable real AI images, add a <a href="https://platform.stability.ai" target="_blank">Stability AI</a> key below (free credits on signup).</p>
+        <div class="field-label">Stability AI Key (optional)</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="stabilityKeyInput" placeholder="sk-...">
+          <button class="save-btn" onclick="saveStabilityKey()">Save</button>
+        </div>
+        <div class="success-msg" id="stabilitySuccess">✓ Connected successfully</div>
+      </div>
+
+      <div class="settings-card" style="border-color:#1a1a1a;">
+        <h3 style="color:#444;">🗑 Clear Data</h3>
+        <p>Remove all saved API keys and chat history from this browser.</p>
+        <button onclick="clearAll()" style="background:#111;border:1px solid #222;color:#666;padding:10px 20px;border-radius:10px;cursor:pointer;font-family:Inter,sans-serif;font-size:0.82rem;transition:all 0.2s;" onmouseover="this.style.borderColor='#444';this.style.color='#fff'" onmouseout="this.style.borderColor='#222';this.style.color='#666'">Clear everything</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-  let mode = 'chat';
-  let apiKey = localStorage.getItem('stoicis_gemini_key') || '';
-  let isThinking = false;
-  let conversationHistory = [];
-
-  const modeLabels = { chat: 'Conversation', image: 'Image Generation', code: 'Code Assistant' };
-  const modePlaceholders = {
-    chat: 'Ask anything...',
-    image: 'Describe the image you want to create...',
-    code: 'Describe the code you need...'
-  };
+  let groqKey = localStorage.getItem('stoicis_groq') || '';
+  let stabilityKey = localStorage.getItem('stoicis_stability') || '';
+  let chatHistory = [];
+  let activeMode = 'chat';
 
   function init() {
-    if (apiKey) document.getElementById('setupBanner').style.display = 'none';
-    setupInput();
+    updateStatus();
+    if (groqKey) document.getElementById('groqKeyInput').value = groqKey;
+    if (stabilityKey) document.getElementById('stabilityKeyInput').value = stabilityKey;
+    setupTextareas();
   }
 
-  function saveApiKey() {
-    const val = document.getElementById('apiKeyInput').value.trim();
-    if (val.length > 15) {
-      apiKey = val;
-      localStorage.setItem('stoicis_gemini_key', val);
-      document.getElementById('setupBanner').style.display = 'none';
-      addMessage('ai', 'Connected! Stoicis is ready. What would you like to explore?');
-      hideWelcome();
+  function updateStatus() {
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusText');
+    if (groqKey) {
+      dot.classList.add('connected');
+      txt.textContent = 'Connected';
+      document.getElementById('groqConnected').textContent = '● connected';
     } else {
-      alert('Please enter a valid Gemini API key (starts with AIza...)');
+      dot.classList.remove('connected');
+      txt.textContent = 'Add API Key';
     }
   }
 
-  function setMode(m) {
-    mode = m;
-    document.getElementById('modeLabel').textContent = modeLabels[m];
-    document.getElementById('userInput').placeholder = modePlaceholders[m];
-    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-    document.getElementById('pill-' + m).classList.add('active');
+  function showPanel(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(name + 'Panel').classList.add('active');
+    const navEl = document.getElementById('nav-' + name);
+    if (navEl) navEl.classList.add('active');
+    activeMode = name;
   }
 
-  function hideWelcome() {
-    const w = document.getElementById('welcome');
-    if (w) w.style.display = 'none';
+  function saveGroqKey() {
+    const val = document.getElementById('groqKeyInput').value.trim();
+    if (val.length > 10) {
+      groqKey = val;
+      localStorage.setItem('stoicis_groq', val);
+      document.getElementById('groqSuccess').style.display = 'block';
+      updateStatus();
+      setTimeout(() => document.getElementById('groqSuccess').style.display = 'none', 3000);
+    } else {
+      alert('Please enter a valid Groq API key.');
+    }
   }
 
-  function quickPrompt(text) {
-    if (!apiKey) { alert('Please connect your Gemini API key first.'); return; }
-    document.getElementById('userInput').value = text;
-    sendMessage();
+  function saveStabilityKey() {
+    const val = document.getElementById('stabilityKeyInput').value.trim();
+    if (val.length > 10) {
+      stabilityKey = val;
+      localStorage.setItem('stoicis_stability', val);
+      document.getElementById('stabilitySuccess').style.display = 'block';
+      setTimeout(() => document.getElementById('stabilitySuccess').style.display = 'none', 3000);
+    }
   }
 
-  function addMessage(role, content, type = 'text') {
-    hideWelcome();
-    const chat = document.getElementById('chat');
+  function clearAll() {
+    if (confirm('Clear all keys and history?')) {
+      localStorage.clear();
+      groqKey = ''; stabilityKey = ''; chatHistory = [];
+      document.getElementById('groqKeyInput').value = '';
+      document.getElementById('stabilityKeyInput').value = '';
+      updateStatus();
+    }
+  }
+
+  // ── CHAT ──
+  function tryPrompt(text) {
+    if (!groqKey) { showPanel('settings'); return; }
+    document.getElementById('chatInput').value = text;
+    sendChat();
+  }
+
+  function addMsg(container, role, content, type = 'text') {
+    const ws = container.querySelector('.welcome-screen');
+    if (ws) ws.style.display = 'none';
+
     const div = document.createElement('div');
-    div.className = `message ${role}`;
+    div.className = `msg ${role}`;
 
     const avatar = document.createElement('div');
-    avatar.className = `avatar ${role}`;
+    avatar.className = 'msg-avatar';
     avatar.textContent = role === 'ai' ? 'S' : 'U';
 
     const bubble = document.createElement('div');
-    bubble.className = 'bubble';
+    bubble.className = 'msg-bubble';
 
-    if (type === 'image') {
-      const img = document.createElement('img');
-      img.src = content;
-      img.className = 'gen-image';
-      img.alt = 'Generated image';
-      bubble.appendChild(img);
-    } else if (type === 'code') {
+    if (type === 'code') {
       const label = document.createElement('div');
-      label.className = 'code-label';
-      label.textContent = '— Generated Code —';
+      label.className = 'code-lang';
+      label.textContent = 'Generated Code';
       const block = document.createElement('div');
       block.className = 'code-block';
       block.textContent = content;
-      bubble.appendChild(label);
-      bubble.appendChild(block);
+      const wrap = document.createElement('div');
+      wrap.className = 'code-wrap';
+      wrap.appendChild(label);
+      wrap.appendChild(block);
+      bubble.appendChild(wrap);
+    } else if (type === 'image') {
+      const img = document.createElement('img');
+      img.src = content;
+      img.className = 'msg-image';
+      bubble.appendChild(img);
     } else {
       bubble.textContent = content;
     }
 
     div.appendChild(avatar);
     div.appendChild(bubble);
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
   }
 
-  function addThinking() {
-    hideWelcome();
-    const chat = document.getElementById('chat');
-    const div = document.createElement('div');
-    div.className = 'thinking';
-    div.id = 'thinking';
-    div.innerHTML = `<div class="thinking-dots"><span></span><span></span><span></span></div><span>Stoicis is thinking...</span>`;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
+  function addTyping(container) {
+    const ws = container.querySelector('.welcome-screen');
+    if (ws) ws.style.display = 'none';
+    const d = document.createElement('div');
+    d.className = 'typing'; d.id = 'typing-' + container.id;
+    d.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div><span>Stoicis is thinking...</span>`;
+    container.appendChild(d);
+    container.scrollTop = container.scrollHeight;
   }
 
-  function removeThinking() {
-    const t = document.getElementById('thinking');
+  function removeTyping(container) {
+    const t = document.getElementById('typing-' + container.id);
     if (t) t.remove();
   }
 
-  async function sendMessage() {
-    if (isThinking) return;
-    const input = document.getElementById('userInput');
+  async function callGroq(messages, systemPrompt) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${groqKey}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'system', content: systemPrompt }, ...messages],
+        max_tokens: 2048,
+        temperature: 0.7
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.choices[0].message.content;
+  }
+
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
     const text = input.value.trim();
     if (!text) return;
-    if (!apiKey) { alert('Please connect your Gemini API key first.'); return; }
+    if (!groqKey) { showPanel('settings'); return; }
 
     input.value = '';
     input.style.height = 'auto';
-    addMessage('user', text);
-    isThinking = true;
+    const container = document.getElementById('messages');
+    addMsg(container, 'user', text);
     document.getElementById('sendBtn').disabled = true;
-    addThinking();
+    addTyping(container);
+
+    chatHistory.push({ role: 'user', content: text });
 
     try {
-      if (mode === 'image') {
-        await generateImage(text);
-      } else {
-        await generateText(text, mode === 'code');
-      }
+      const reply = await callGroq(chatHistory, 'You are Stoicis, a helpful, thoughtful, and concise AI assistant.');
+      chatHistory.push({ role: 'assistant', content: reply });
+      removeTyping(container);
+      addMsg(container, 'ai', reply);
     } catch (e) {
-      removeThinking();
-      addMessage('ai', '⚠ Error: ' + e.message);
+      removeTyping(container);
+      addMsg(container, 'ai', '⚠ Error: ' + e.message);
     }
-
-    isThinking = false;
     document.getElementById('sendBtn').disabled = false;
   }
 
-  async function generateText(prompt, isCode) {
-    const systemText = isCode
-      ? 'You are Stoicis, an expert coding assistant. Provide clean, well-commented code with a brief explanation. Always wrap code in markdown code blocks using triple backticks.'
-      : 'You are Stoicis, a thoughtful and precise AI assistant. Be concise and clear.';
+  // ── CODE ──
+  function tryCode(text) {
+    if (!groqKey) { showPanel('settings'); return; }
+    document.getElementById('codeInput').value = text;
+    sendCode();
+  }
 
-    conversationHistory.push({ role: 'user', parts: [{ text: prompt }] });
+  async function sendCode() {
+    const input = document.getElementById('codeInput');
+    const text = input.value.trim();
+    if (!text) return;
+    if (!groqKey) { showPanel('settings'); return; }
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemText }] },
-          contents: conversationHistory,
-          generationConfig: { maxOutputTokens: 2048, temperature: 0.7 }
-        })
-      }
-    );
+    input.value = '';
+    input.style.height = 'auto';
+    const container = document.getElementById('codeMessages');
+    addMsg(container, 'user', text);
+    document.getElementById('codeSendBtn').disabled = true;
+    addTyping(container);
 
-    const data = await res.json();
-    removeThinking();
-    if (data.error) throw new Error(data.error.message);
-
-    const reply = data.candidates[0].content.parts[0].text;
-    conversationHistory.push({ role: 'model', parts: [{ text: reply }] });
-
-    if (isCode) {
+    try {
+      const reply = await callGroq(
+        [{ role: 'user', content: text }],
+        'You are Stoicis, an expert coding assistant. Write clean, well-commented code. Always wrap code in markdown code blocks with triple backticks.'
+      );
+      removeTyping(container);
       const codeMatch = reply.match(/```[\w]*\n([\s\S]*?)```/);
       if (codeMatch) {
         const explanation = reply.replace(/```[\s\S]*?```/g, '').trim();
-        if (explanation) addMessage('ai', explanation);
-        addMessage('ai', codeMatch[1].trim(), 'code');
+        if (explanation) addMsg(container, 'ai', explanation);
+        addMsg(container, 'ai', codeMatch[1].trim(), 'code');
       } else {
-        addMessage('ai', reply);
+        addMsg(container, 'ai', reply);
       }
-    } else {
-      addMessage('ai', reply);
+    } catch (e) {
+      removeTyping(container);
+      addMsg(container, 'ai', '⚠ Error: ' + e.message);
     }
+    document.getElementById('codeSendBtn').disabled = false;
   }
 
-  async function generateImage(prompt) {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
-        })
-      }
-    );
+  // ── IMAGE ──
+  async function sendImage() {
+    const input = document.getElementById('imageInput');
+    const text = input.value.trim();
+    if (!text) return;
+    if (!groqKey) { showPanel('settings'); return; }
 
-    const data = await res.json();
-    removeThinking();
-    if (data.error) throw new Error(data.error.message);
+    input.value = '';
+    input.style.height = 'auto';
 
-    const parts = data.candidates[0].content.parts;
-    for (const part of parts) {
-      if (part.inlineData) {
-        addMessage('ai', `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`, 'image');
-      } else if (part.text) {
-        addMessage('ai', part.text);
+    const gallery = document.getElementById('imageGallery');
+    const empty = gallery.querySelector('.image-empty');
+    if (empty) empty.remove();
+
+    document.getElementById('imgSendBtn').disabled = true;
+
+    // placeholder loading card
+    const loading = document.createElement('div');
+    loading.style.cssText = 'width:220px;height:220px;border-radius:14px;background:#111;border:1px solid #1e1e1e;display:flex;align-items:center;justify-content:center;color:#333;font-size:0.8rem;';
+    loading.textContent = 'Generating...';
+    gallery.appendChild(loading);
+
+    try {
+      if (stabilityKey) {
+        // Stability AI
+        const res = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${stabilityKey}`, 'Accept': 'application/json' },
+          body: JSON.stringify({ text_prompts: [{ text, weight: 1 }], cfg_scale: 7, height: 1024, width: 1024, steps: 30, samples: 1 })
+        });
+        const data = await res.json();
+        if (data.artifacts) {
+          loading.remove();
+          const img = document.createElement('img');
+          img.src = `data:image/png;base64,${data.artifacts[0].base64}`;
+          img.className = 'gallery-img';
+          gallery.appendChild(img);
+        } else {
+          throw new Error(data.message || 'Image generation failed');
+        }
+      } else {
+        // Fallback: use Groq to describe, show placeholder
+        loading.remove();
+        const placeholder = document.createElement('div');
+        placeholder.style.cssText = 'width:220px;height:220px;border-radius:14px;background:#0d0d0d;border:1px solid #1e1e1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#444;font-size:0.75rem;text-align:center;padding:16px;';
+        placeholder.innerHTML = `<div style="font-size:2rem">🖼</div><div style="color:#333">"${text.slice(0,40)}..."</div><div style="font-size:0.65rem;color:#222;margin-top:4px;">Add Stability AI key in Settings for real images</div>`;
+        gallery.appendChild(placeholder);
       }
+    } catch (e) {
+      loading.textContent = '⚠ ' + e.message;
     }
+
+    document.getElementById('imgSendBtn').disabled = false;
   }
 
-  function setupInput() {
-    const input = document.getElementById('userInput');
-    input.addEventListener('input', function() {
-      this.style.height = 'auto';
-      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  // ── TEXTAREA AUTO-RESIZE ──
+  function setupTextareas() {
+    ['chatInput', 'imageInput', 'codeInput'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      });
     });
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
+
+    document.getElementById('chatInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+    });
+    document.getElementById('imageInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendImage(); }
+    });
+    document.getElementById('codeInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendCode(); }
     });
   }
 
