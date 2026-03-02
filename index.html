@@ -1,105 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stoicis</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#000;color:#fff;font-family:'Inter',sans-serif;height:100vh;display:flex;overflow:hidden;}
+.sidebar{width:240px;min-width:240px;background:#0a0a0a;border-right:1px solid #161616;display:flex;flex-direction:column;padding:12px;gap:2px;flex-shrink:0;transition:width .25s ease,min-width .25s ease,padding .25s ease,opacity .2s;overflow:hidden;}
+.sidebar.collapsed{width:0;min-width:0;padding:0;opacity:0;pointer-events:none;}
+.sidebar-header{display:flex;align-items:center;justify-content:space-between;padding:6px 4px 12px;white-space:nowrap;}
+.sidebar-title{font-size:1.05rem;font-weight:600;color:#fff;}
+.collapse-btn{background:transparent;border:none;color:#444;cursor:pointer;font-size:1rem;padding:4px;border-radius:6px;transition:all .2s;flex-shrink:0;}
+.collapse-btn:hover{background:#1a1a1a;color:#fff;}
+.new-chat-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid #1e1e1e;background:transparent;color:#666;font-family:'Inter',sans-serif;font-size:.85rem;cursor:pointer;transition:all .2s;margin-bottom:6px;white-space:nowrap;}
+.new-chat-btn:hover{background:#161616;border-color:#2a2a2a;color:#fff;}
+.section-label{font-size:.63rem;color:#2a2a2a;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px 4px;white-space:nowrap;}
+.nav-btn{width:100%;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;border:none;background:transparent;color:#555;font-family:'Inter',sans-serif;font-size:.85rem;cursor:pointer;transition:all .2s;text-align:left;white-space:nowrap;}
+.nav-btn:hover{background:#161616;color:#fff;}
+.nav-btn.active{background:#1a1a1a;color:#fff;}
+.nav-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0;}
+.recents-wrap{flex:1;overflow-y:auto;margin-top:4px;}
+.recents-wrap::-webkit-scrollbar{width:3px;}
+.recents-wrap::-webkit-scrollbar-thumb{background:#1a1a1a;border-radius:3px;}
+.recent-item{width:100%;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:none;background:transparent;color:#444;font-family:'Inter',sans-serif;font-size:.8rem;cursor:pointer;transition:all .2s;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.recent-item:hover{background:#161616;color:#bbb;}
+.recent-item.active-chat{background:#1a1a1a;color:#fff;}
+.rdot{width:5px;height:5px;border-radius:50%;background:#2a2a2a;flex-shrink:0;}
+.no-recents{font-size:.75rem;color:#222;padding:8px 12px;}
+.sidebar-bottom{border-top:1px solid #161616;padding-top:8px;margin-top:4px;display:flex;flex-direction:column;gap:2px;}
+.status-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;border:none;background:transparent;width:100%;font-family:'Inter',sans-serif;font-size:.85rem;color:#444;cursor:pointer;transition:all .2s;text-align:left;white-space:nowrap;}
+.status-btn:hover{background:#161616;color:#aaa;}
+.sdot{width:7px;height:7px;border-radius:50%;background:#222;flex-shrink:0;transition:background .3s;}
+.sdot.on{background:#4ade80;box-shadow:0 0 6px #4ade8055;}
+.open-btn{position:fixed;top:12px;left:12px;z-index:999;width:34px;height:34px;border-radius:9px;border:1px solid #1e1e1e;background:#0a0a0a;color:#555;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;}
+.open-btn:hover{background:#1a1a1a;color:#fff;border-color:#333;}
+.open-btn.visible{display:flex;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.panel{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.panel.active{display:flex;}
+.welcome-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;text-align:center;padding:40px 20px;}
+.philosopher-wrap{width:170px;height:200px;position:relative;margin-bottom:22px;background:#000;border-radius:12px;overflow:hidden;}
+.philosopher-wrap img{width:100%;height:100%;object-fit:cover;object-position:50% 10%;display:block;mix-blend-mode:screen;filter:contrast(2.2) brightness(0.75) grayscale(1);}
+.philosopher-wrap::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 75% 65% at 50% 38%, transparent 28%, rgba(0,0,0,.55) 60%, #000 100%);pointer-events:none;}
+.welcome-screen h1{font-size:1.9rem;font-weight:300;color:#fff;letter-spacing:-.02em;margin-bottom:8px;}
+.welcome-screen p{font-size:.85rem;color:#333;max-width:340px;line-height:1.7;margin-bottom:20px;}
+.quick-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.quick-btn{padding:9px 16px;border-radius:20px;border:1px solid #1e1e1e;background:transparent;color:#555;font-family:'Inter',sans-serif;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.quick-btn:hover{border-color:#444;color:#fff;background:#111;}
+#messages,#codeMessages{flex:1;overflow-y:auto;padding:28px 48px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth;}
+#messages::-webkit-scrollbar,#codeMessages::-webkit-scrollbar{width:4px;}
+#messages::-webkit-scrollbar-thumb,#codeMessages::-webkit-scrollbar-thumb{background:#1a1a1a;border-radius:4px;}
+.msg{display:flex;gap:12px;animation:fadeUp .2s ease;max-width:820px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse;}
+.msg-avatar{width:32px;height:32px;border-radius:8px;flex-shrink:0;margin-top:2px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600;background:#000;}
+.msg.ai .msg-avatar{border:1px solid #1e1e1e;}
+.msg.ai .msg-avatar img{width:220%;height:220%;object-fit:cover;object-position:20% 5%;mix-blend-mode:screen;filter:contrast(2.4) brightness(0.65) grayscale(1);margin-left:-40%;margin-top:-12%;}
+.msg.ai .msg-avatar::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 46% 42% at 42% 30%, transparent 12%, rgba(0,0,0,.65) 48%, #000 100%);pointer-events:none;}
+.msg.user .msg-avatar{background:#fff;color:#000;border:none;}
+.msg-bubble{padding:12px 16px;border-radius:14px;font-size:.87rem;line-height:1.75;max-width:580px;white-space:pre-wrap;word-break:break-word;}
+.msg.ai .msg-bubble{background:#0f0f0f;border:1px solid #1a1a1a;color:#ccc;border-radius:3px 14px 14px 14px;}
+.msg.user .msg-bubble{background:#fff;color:#000;border-radius:14px 3px 14px 14px;}
+.code-lang{font-size:.6rem;color:#333;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.code-block{background:#050505;border:1px solid #1a1a1a;border-radius:10px;padding:14px;font-family:'SF Mono','Fira Code',monospace;font-size:.75rem;line-height:1.7;color:#7dd3fc;overflow-x:auto;white-space:pre;}
+.typing{display:flex;align-items:center;gap:8px;color:#2a2a2a;font-size:.78rem;padding:4px 0;}
+.typing-dots{display:flex;gap:4px;}
+.typing-dots span{width:5px;height:5px;background:#2a2a2a;border-radius:50%;animation:blink 1.3s infinite;}
+.typing-dots span:nth-child(2){animation-delay:.15s}.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+.input-bar{padding:12px 48px 20px;background:#000;border-top:1px solid #0d0d0d;}
+.input-row{display:flex;align-items:flex-end;gap:10px;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:11px 14px;transition:border-color .2s;}
+.input-row:focus-within{border-color:#2a2a2a;}
+.chat-textarea{flex:1;background:transparent;border:none;outline:none;color:#fff;font-family:'Inter',sans-serif;font-size:.87rem;line-height:1.5;resize:none;min-height:22px;max-height:120px;}
+.chat-textarea::placeholder{color:#2a2a2a;}
+.send-btn{background:#fff;border:none;color:#000;width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;flex-shrink:0;}
+.send-btn:hover{background:#e0e0e0;transform:scale(1.05);}
+.send-btn:disabled{background:#161616;color:#333;cursor:not-allowed;transform:none;}
+.input-hint{font-size:.68rem;color:#1a1a1a;text-align:center;margin-top:7px;}
+.settings-wrap{flex:1;overflow-y:auto;padding:36px 48px;}
+.settings-title{font-size:1.3rem;font-weight:500;margin-bottom:6px;}
+.settings-sub{font-size:.83rem;color:#444;margin-bottom:24px;line-height:1.6;}
+.settings-card{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:14px;padding:20px;margin-bottom:12px;max-width:560px;}
+.settings-card h3{font-size:.9rem;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.badge{font-size:.65rem;padding:2px 8px;border-radius:20px;font-weight:400;}
+.badge.free{background:#052010;color:#4ade80;border:1px solid #0a3a1a;}
+.badge.paid{background:#100505;color:#f87171;border:1px solid #2a0a0a;}
+.badge.active-provider{background:#101520;color:#60a5fa;border:1px solid #1a2a40;}
+.settings-card p{font-size:.78rem;color:#3a3a3a;margin-bottom:12px;line-height:1.6;}
+.settings-card a{color:#444;}
+.field-label{font-size:.67rem;color:#2a2a2a;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;}
+.field-row{display:flex;gap:8px;}
+.field-input{flex:1;background:#000;border:1px solid #1e1e1e;border-radius:9px;padding:9px 13px;color:#fff;font-family:'Inter',sans-serif;font-size:.82rem;outline:none;transition:border-color .2s;}
+.field-input:focus{border-color:#333;}
+.field-input::placeholder{color:#222;}
+.save-btn{background:#fff;border:none;color:#000;padding:9px 18px;border-radius:9px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;transition:background .2s;white-space:nowrap;}
+.save-btn:hover{background:#ddd;}
+.use-btn{background:transparent;border:1px solid #1e1e1e;color:#555;padding:9px 14px;border-radius:9px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.82rem;transition:all .2s;white-space:nowrap;}
+.use-btn:hover{border-color:#444;color:#fff;}
+.use-btn.selected{border-color:#60a5fa;color:#60a5fa;background:#101520;}
+.success-msg{font-size:.75rem;color:#4ade80;margin-top:6px;display:none;}
+.provider-section-title{font-size:.75rem;color:#444;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #111;}
+.danger-btn{background:transparent;border:1px solid #1e1e1e;color:#333;padding:9px 18px;border-radius:9px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.82rem;transition:all .2s;}
+.danger-btn:hover{border-color:#ff4444;color:#ff4444;}
+</style>
+</head>
+<body>
+
+<button class="open-btn" id="openBtn" onclick="openSidebar()">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Stoicis</span>
+    <button class="collapse-btn" onclick="closeSidebar()" title="Close sidebar">←</button>
+  </div>
+  <button class="new-chat-btn" onclick="newChat()">✏️&nbsp; New chat</button>
+  <div class="section-label">Modes</div>
+  <button class="nav-btn active" onclick="showPanel('chat')" id="nav-chat"><span class="nav-icon">💬</span> Chat</button>
+  <button class="nav-btn" onclick="showPanel('code')" id="nav-code"><span class="nav-icon">⌨️</span> Code</button>
+  <div class="section-label" style="margin-top:8px;">Recents</div>
+  <div class="recents-wrap">
+    <div id="recentsList"><div class="no-recents">No chats yet</div></div>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="status-btn" onclick="showPanel('settings')">
+      <div class="sdot" id="sdot"></div>
+      <span id="statusTxt">Add API Key</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('settings')" id="nav-settings">
+      <span class="nav-icon">⚙️</span> Settings
+    </button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- CHAT -->
+  <div class="panel active" id="chatPanel">
+    <div id="messages">
+      <div class="welcome-screen" id="welcomeScreen">
+        <div class="philosopher-wrap">
+          <img src="data:image/jpeg;base64,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" alt="Stoicis">
+        </div>
+        <h1>Hello. I'm Stoicis.</h1>
+        <p>Your AI assistant for conversation and code.</p>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="tryPrompt('Explain quantum computing simply')">Explain something</button>
+          <button class="quick-btn" onclick="tryPrompt('Write me a short poem about midnight')">Write a poem</button>
+          <button class="quick-btn" onclick="tryPrompt('Give me 5 productivity habits')">Give me tips</button>
+        </div>
+      </div>
+    </div>
+    <div class="input-bar">
+      <div class="input-row">
+        <textarea class="chat-textarea" id="chatInput" rows="1" placeholder="Message Stoicis..."></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+    </div>
+  </div>
+
+  <!-- CODE -->
+  <div class="panel" id="codePanel">
+    <div id="codeMessages">
+      <div class="welcome-screen">
+        <h1>Code Assistant</h1>
+        <p>Describe what you want to build and Stoicis will write clean code for you.</p>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="tryCode('A Python web scraper')">Python scraper</button>
+          <button class="quick-btn" onclick="tryCode('JavaScript debounce function')">JS debounce</button>
+          <button class="quick-btn" onclick="tryCode('REST API in Node.js with Express')">Node.js API</button>
+        </div>
+      </div>
+    </div>
+    <div class="input-bar">
+      <div class="input-row">
+        <textarea class="chat-textarea" id="codeInput" rows="1" placeholder="Describe the code you need..."></textarea>
+        <button class="send-btn" id="codeSendBtn" onclick="sendCode()">↑</button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="settingsPanel">
+    <div class="settings-wrap">
+      <div class="settings-title">Settings</div>
+      <div class="settings-sub">Add your API keys below. Click <b style="color:#60a5fa">Use</b> to set your active provider. Keys are stored only in your browser.</div>
+
+      <div class="provider-section-title">🆓 Free Providers</div>
+
+      <div class="settings-card">
+        <h3>Groq <span class="badge free">Free</span> <span class="badge active-provider" id="badge-groq" style="display:none">Active</span></h3>
+        <p>No credit card needed. <a href="https://console.groq.com" target="_blank">console.groq.com</a> → API Keys → Create Key. Uses Llama 3.3 70B.</p>
+        <div class="field-label">API Key</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="key-groq" placeholder="gsk_...">
+          <button class="save-btn" onclick="saveKey('groq')">Save</button>
+          <button class="use-btn" id="use-groq" onclick="setProvider('groq')">Use</button>
+        </div>
+        <div class="success-msg" id="ok-groq">✓ Saved</div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Google Gemini <span class="badge free">Free tier</span> <span class="badge active-provider" id="badge-gemini" style="display:none">Active</span></h3>
+        <p>Free tier available. <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a> → Get API Key. Uses Gemini 2.0 Flash.</p>
+        <div class="field-label">API Key</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="key-gemini" placeholder="AIza...">
+          <button class="save-btn" onclick="saveKey('gemini')">Save</button>
+          <button class="use-btn" id="use-gemini" onclick="setProvider('gemini')">Use</button>
+        </div>
+        <div class="success-msg" id="ok-gemini">✓ Saved</div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Cohere <span class="badge free">Free tier</span> <span class="badge active-provider" id="badge-cohere" style="display:none">Active</span></h3>
+        <p>Free trial key available. <a href="https://dashboard.cohere.com/api-keys" target="_blank">dashboard.cohere.com</a> → API Keys. Uses Command R+.</p>
+        <div class="field-label">API Key</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="key-cohere" placeholder="...">
+          <button class="save-btn" onclick="saveKey('cohere')">Save</button>
+          <button class="use-btn" id="use-cohere" onclick="setProvider('cohere')">Use</button>
+        </div>
+        <div class="success-msg" id="ok-cohere">✓ Saved</div>
+      </div>
+
+      <div class="provider-section-title" style="margin-top:16px;">💳 Paid Providers</div>
+
+      <div class="settings-card">
+        <h3>OpenAI <span class="badge paid">Paid</span> <span class="badge active-provider" id="badge-openai" style="display:none">Active</span></h3>
+        <p>Requires billing. <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a> → API Keys. Uses GPT-4o.</p>
+        <div class="field-label">API Key</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="key-openai" placeholder="sk-...">
+          <button class="save-btn" onclick="saveKey('openai')">Save</button>
+          <button class="use-btn" id="use-openai" onclick="setProvider('openai')">Use</button>
+        </div>
+        <div class="success-msg" id="ok-openai">✓ Saved</div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Anthropic (Claude) <span class="badge paid">Paid</span> <span class="badge active-provider" id="badge-anthropic" style="display:none">Active</span></h3>
+        <p>Requires billing. <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> → API Keys. Uses Claude 3.5 Sonnet.</p>
+        <div class="field-label">API Key</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="key-anthropic" placeholder="sk-ant-...">
+          <button class="save-btn" onclick="saveKey('anthropic')">Save</button>
+          <button class="use-btn" id="use-anthropic" onclick="setProvider('anthropic')">Use</button>
+        </div>
+        <div class="success-msg" id="ok-anthropic">✓ Saved</div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Mistral <span class="badge paid">Paid</span> <span class="badge active-provider" id="badge-mistral" style="display:none">Active</span></h3>
+        <p>Requires billing. <a href="https://console.mistral.ai/api-keys" target="_blank">console.mistral.ai</a> → API Keys. Uses Mistral Large.</p>
+        <div class="field-label">API Key</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="key-mistral" placeholder="...">
+          <button class="save-btn" onclick="saveKey('mistral')">Save</button>
+          <button class="use-btn" id="use-mistral" onclick="setProvider('mistral')">Use</button>
+        </div>
+        <div class="success-msg" id="ok-mistral">✓ Saved</div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Perplexity <span class="badge paid">Paid</span> <span class="badge active-provider" id="badge-perplexity" style="display:none">Active</span></h3>
+        <p>Requires billing. <a href="https://www.perplexity.ai/settings/api" target="_blank">perplexity.ai/settings/api</a>. Uses Sonar Large — great for web-aware answers.</p>
+        <div class="field-label">API Key</div>
+        <div class="field-row">
+          <input class="field-input" type="password" id="key-perplexity" placeholder="pplx-...">
+          <button class="save-btn" onclick="saveKey('perplexity')">Save</button>
+          <button class="use-btn" id="use-perplexity" onclick="setProvider('perplexity')">Use</button>
+        </div>
+        <div class="success-msg" id="ok-perplexity">✓ Saved</div>
+      </div>
+
+      <div class="settings-card" style="border-color:#0f0f0f;margin-top:16px;">
+        <h3 style="color:#2a2a2a;">🗑 Clear Data</h3>
+        <p style="color:#1e1e1e;">Remove all saved keys and chat history.</p>
+        <button class="danger-btn" onclick="clearAll()">Clear everything</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 <script>
-let conversation = [];
+const IMG = document.querySelector('.philosopher-wrap img').src;
+const PROVIDERS = ['groq','gemini','openai','anthropic','mistral','cohere','perplexity'];
 
-async function sendMessage() {
-  const input = document.getElementById("input");
-  const chat = document.getElementById("chat");
-  const provider = document.getElementById("provider").value;
-  const apiKey = document.getElementById("apikey").value;
+let keys = JSON.parse(localStorage.getItem('stoicis_keys') || '{}');
+let activeProvider = localStorage.getItem('stoicis_provider') || '';
+let chatHistory = [];
+let allChats = JSON.parse(localStorage.getItem('stoicis_chats') || '[]');
+let currentChatId = null;
+let sidebarOpen = true;
 
-  const message = input.value.trim();
-  if (!message) return;
+function init() {
+  PROVIDERS.forEach(p => {
+    if (keys[p]) document.getElementById('key-'+p).value = keys[p];
+  });
+  updateProviderUI();
+  updateStatus();
+  renderRecents();
+  setupTextareas();
+}
 
-  // Show user message
-  chat.innerHTML += `<div class="user"><b>You:</b> ${message}</div>`;
-  input.value = "";
+function closeSidebar() {
+  sidebarOpen = false;
+  document.getElementById('sidebar').classList.add('collapsed');
+  document.getElementById('openBtn').classList.add('visible');
+}
 
-  conversation.push({ role: "user", content: message });
+function openSidebar() {
+  sidebarOpen = true;
+  document.getElementById('sidebar').classList.remove('collapsed');
+  document.getElementById('openBtn').classList.remove('visible');
+}
 
-  let endpoint = "";
-  let headers = {};
-  let body = {};
+function saveKey(provider) {
+  const val = document.getElementById('key-'+provider).value.trim();
+  if (val.length < 5) { alert('Please enter a valid API key.'); return; }
+  keys[provider] = val;
+  localStorage.setItem('stoicis_keys', JSON.stringify(keys));
+  const ok = document.getElementById('ok-'+provider);
+  ok.style.display = 'block';
+  setTimeout(() => ok.style.display='none', 2500);
+  if (!activeProvider) setProvider(provider);
+}
 
-  // ------------------------
-  // GROQ
-  // ------------------------
-  if (provider === "groq") {
-    endpoint = "https://api.groq.com/openai/v1/chat/completions";
-    headers = {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + apiKey
-    };
-    body = {
-      model: "llama-3.3-70b-versatile",
-      messages: conversation,
-      temperature: 0.7
-    };
-  }
+function setProvider(provider) {
+  if (!keys[provider]) { alert('Please save a '+provider+' API key first.'); return; }
+  activeProvider = provider;
+  localStorage.setItem('stoicis_provider', provider);
+  updateProviderUI();
+  updateStatus();
+}
 
-  // ------------------------
-  // GEMINI (Google)
-  // ------------------------
-  else if (provider === "gemini") {
-    endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    headers = {
-      "Content-Type": "application/json"
-    };
-    body = {
-      contents: conversation.map(m => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }]
-      }))
-    };
-  }
-
-  // ------------------------
-  // COHERE
-  // ------------------------
-  else if (provider === "cohere") {
-    endpoint = "https://api.cohere.ai/v1/chat";
-    headers = {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + apiKey
-    };
-    body = {
-      model: "command-r-plus",
-      message: message,
-      chat_history: conversation
-        .filter(m => m.role !== "assistant")
-        .map(m => ({
-          role: m.role,
-          message: m.content
-        }))
-    };
-  }
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(body)
-    });
-
-    const data = await response.json();
-    let reply = "";
-
-    if (provider === "groq") {
-      reply = data.choices[0].message.content;
-    } 
-    else if (provider === "gemini") {
-      reply = data.candidates[0].content.parts[0].text;
-    } 
-    else if (provider === "cohere") {
-      reply = data.text;
+function updateProviderUI() {
+  PROVIDERS.forEach(p => {
+    const badge = document.getElementById('badge-'+p);
+    const btn = document.getElementById('use-'+p);
+    if (p === activeProvider) {
+      badge.style.display = 'inline';
+      btn.classList.add('selected');
+      btn.textContent = 'Active';
+    } else {
+      badge.style.display = 'none';
+      btn.classList.remove('selected');
+      btn.textContent = 'Use';
     }
+  });
+}
 
-    conversation.push({ role: "assistant", content: reply });
-
-    chat.innerHTML += `<div class="assistant"><b>Stoicis:</b> ${reply}</div>`;
-    chat.scrollTop = chat.scrollHeight;
-
-  } catch (error) {
-    chat.innerHTML += `<div style="color:red;">Error: Check API key or provider.</div>`;
+function updateStatus() {
+  const dot = document.getElementById('sdot');
+  const txt = document.getElementById('statusTxt');
+  if (activeProvider && keys[activeProvider]) {
+    dot.classList.add('on');
+    txt.textContent = activeProvider.charAt(0).toUpperCase()+activeProvider.slice(1)+' connected';
+  } else {
+    dot.classList.remove('on');
+    txt.textContent = 'Add API Key';
   }
 }
+
+function renderRecents() {
+  const list = document.getElementById('recentsList');
+  if (!allChats.length) { list.innerHTML = '<div class="no-recents">No chats yet</div>'; return; }
+  list.innerHTML = allChats.slice().reverse().map(c =>
+    '<button class="recent-item '+(c.id===currentChatId?'active-chat':'')+'" onclick="loadChat(\''+c.id+'\')"><span class="rdot"></span>'+(c.title||'New chat')+'</button>'
+  ).join('');
+}
+
+function newChat() {
+  currentChatId = null; chatHistory = [];
+  showPanel('chat');
+  document.getElementById('messages').innerHTML =
+    '<div class="welcome-screen" id="welcomeScreen">' +
+    '<div class="philosopher-wrap"><img src="' + IMG + '" alt="Stoicis"></div>' +
+    '<h1>Hello. I\'m Stoicis.</h1>' +
+    '<p>Start a new conversation below.</p>' +
+    '<div class="quick-btns">' +
+    '<button class="quick-btn" onclick="tryPrompt(\'Explain quantum computing simply\')">Explain something</button>' +
+    '<button class="quick-btn" onclick="tryPrompt(\'Write me a short poem about midnight\')">Write a poem</button>' +
+    '<button class="quick-btn" onclick="tryPrompt(\'Give me 5 productivity habits\')">Give me tips</button>' +
+    '</div></div>';
+  renderRecents();
+}
+
+function saveChat(firstMsg) {
+  if (!currentChatId) {
+    currentChatId = Date.now().toString();
+    const title = firstMsg.length > 38 ? firstMsg.slice(0,38)+'…' : firstMsg;
+    allChats.push({id:currentChatId,title,history:chatHistory});
+  } else {
+    const idx = allChats.findIndex(c=>c.id===currentChatId);
+    if (idx>=0) allChats[idx].history = chatHistory;
+  }
+  localStorage.setItem('stoicis_chats', JSON.stringify(allChats));
+  renderRecents();
+}
+
+function loadChat(id) {
+  const chat = allChats.find(c=>c.id===id);
+  if (!chat) return;
+  currentChatId = id; chatHistory = chat.history||[];
+  showPanel('chat');
+  const container = document.getElementById('messages');
+  container.innerHTML = '';
+  chatHistory.forEach(m => addMsg('messages', m.role==='user'?'user':'ai', m.content));
+  renderRecents();
+}
+
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(name+'Panel').classList.add('active');
+  const el = document.getElementById('nav-'+name);
+  if (el) el.classList.add('active');
+}
+
+function clearAll() {
+  if (!confirm('Clear everything?')) return;
+  localStorage.clear();
+  keys={}; activeProvider=''; chatHistory=[]; allChats=[]; currentChatId=null;
+  PROVIDERS.forEach(p => { document.getElementById('key-'+p).value=''; });
+  updateProviderUI(); updateStatus(); renderRecents();
+}
+
+async function callAI(messages, sys) {
+  if (!activeProvider || !keys[activeProvider]) {
+    showPanel('settings');
+    throw new Error('No active provider. Please add and select an API key in Settings.');
+  }
+  const key = keys[activeProvider];
+  const allMsgs = [{role:'system',content:sys},...messages];
+
+  if (activeProvider==='groq') {
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:allMsgs,max_tokens:2048,temperature:0.7})});
+    const d = await r.json(); if(d.error) throw new Error(d.error.message);
+    return d.choices[0].message.content;
+  }
+  if (activeProvider==='openai') {
+    const r = await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o',messages:allMsgs,max_tokens:2048,temperature:0.7})});
+    const d = await r.json(); if(d.error) throw new Error(d.error.message);
+    return d.choices[0].message.content;
+  }
+  if (activeProvider==='gemini') {
+    const contents = messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents,generationConfig:{maxOutputTokens:2048}})});
+    const d = await r.json(); if(d.error) throw new Error(d.error.message);
+    return d.candidates[0].content.parts[0].text;
+  }
+  if (activeProvider==='anthropic') {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:2048,system:sys,messages})});
+    const d = await r.json(); if(d.error) throw new Error(d.error.message||d.error);
+    return d.content[0].text;
+  }
+  if (activeProvider==='mistral') {
+    const r = await fetch('https://api.mistral.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'mistral-large-latest',messages:allMsgs,max_tokens:2048})});
+    const d = await r.json(); if(d.error) throw new Error(d.error.message||JSON.stringify(d.error));
+    return d.choices[0].message.content;
+  }
+  if (activeProvider==='cohere') {
+    const r = await fetch('https://api.cohere.com/v2/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'command-r-plus',messages:allMsgs})});
+    const d = await r.json(); if(d.message) throw new Error(d.message);
+    return d.message.content[0].text;
+  }
+  if (activeProvider==='perplexity') {
+    const r = await fetch('https://api.perplexity.ai/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.1-sonar-large-128k-online',messages:allMsgs,max_tokens:2048})});
+    const d = await r.json(); if(d.error) throw new Error(d.error.message);
+    return d.choices[0].message.content;
+  }
+}
+
+function addMsg(cid, role, content, type='text') {
+  const c = document.getElementById(cid);
+  const ws = c.querySelector('.welcome-screen'); if(ws) ws.style.display='none';
+  const wrap = document.createElement('div'); wrap.className='msg '+role;
+  const av = document.createElement('div'); av.className='msg-avatar';
+  if (role==='ai') { const im=document.createElement('img'); im.src=IMG; im.alt='S'; av.appendChild(im); }
+  else { av.style.cssText='background:#fff;color:#000;'; av.textContent='U'; }
+  const bub = document.createElement('div'); bub.className='msg-bubble';
+  if (type==='code') {
+    const lb=document.createElement('div'); lb.className='code-lang'; lb.textContent='Generated Code';
+    const bl=document.createElement('div'); bl.className='code-block'; bl.textContent=content;
+    bub.appendChild(lb); bub.appendChild(bl);
+  } else { bub.textContent=content; }
+  wrap.appendChild(av); wrap.appendChild(bub); c.appendChild(wrap); c.scrollTop=c.scrollHeight;
+}
+
+function addTyping(cid) {
+  const c=document.getElementById(cid); const ws=c.querySelector('.welcome-screen'); if(ws) ws.style.display='none';
+  const d=document.createElement('div'); d.className='typing'; d.id='ty-'+cid;
+  d.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div><span>Stoicis is thinking…</span>';
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+function rmTyping(cid){const t=document.getElementById('ty-'+cid);if(t)t.remove();}
+
+function tryPrompt(txt){if(!activeProvider){showPanel('settings');return;}document.getElementById('chatInput').value=txt;sendChat();}
+
+async function sendChat(){
+  const inp=document.getElementById('chatInput'); const txt=inp.value.trim();
+  if(!txt) return; if(!activeProvider){showPanel('settings');return;}
+  inp.value=''; inp.style.height='auto';
+  addMsg('messages','user',txt); document.getElementById('sendBtn').disabled=true; addTyping('messages');
+  chatHistory.push({role:'user',content:txt});
+  try{
+    const rep=await callAI(chatHistory,'You are Stoicis, a helpful, thoughtful, and concise AI assistant.');
+    chatHistory.push({role:'assistant',content:rep}); rmTyping('messages'); addMsg('messages','ai',rep); saveChat(txt);
+  }catch(e){rmTyping('messages');addMsg('messages','ai','⚠ '+e.message);}
+  document.getElementById('sendBtn').disabled=false;
+}
+
+function tryCode(txt){if(!activeProvider){showPanel('settings');return;}document.getElementById('codeInput').value=txt;sendCode();}
+
+async function sendCode(){
+  const inp=document.getElementById('codeInput'); const txt=inp.value.trim();
+  if(!txt) return; if(!activeProvider){showPanel('settings');return;}
+  inp.value=''; inp.style.height='auto';
+  addMsg('codeMessages','user',txt); document.getElementById('codeSendBtn').disabled=true; addTyping('codeMessages');
+  try{
+    const rep=await callAI([{role:'user',content:txt}],'You are Stoicis, an expert coding assistant. Write clean, well-commented code. Always wrap code in markdown code blocks with triple backticks.');
+    rmTyping('codeMessages');
+    const m=rep.match(/```[\w]*\n([\s\S]*?)```/);
+    if(m){const ex=rep.replace(/```[\s\S]*?```/g,'').trim();if(ex)addMsg('codeMessages','ai',ex);addMsg('codeMessages','ai',m[1].trim(),'code');}
+    else{addMsg('codeMessages','ai',rep);}
+  }catch(e){rmTyping('codeMessages');addMsg('codeMessages','ai','⚠ '+e.message);}
+  document.getElementById('codeSendBtn').disabled=false;
+}
+
+function setupTextareas(){
+  document.querySelectorAll('.chat-textarea').forEach(el=>{
+    el.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
+  });
+  document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}});
+  document.getElementById('codeInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendCode();}});
+}
+
+init();
 </script>
+</body>
+</html>
